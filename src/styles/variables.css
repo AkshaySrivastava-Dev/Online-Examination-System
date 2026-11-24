@@ -1,0 +1,141 @@
+/* ==========================================================================
+   ExamPro Design System Tokens — Phenomenon Studio Aesthetic
+   Dark Editorial Architecture • High Contrast • Vibrant Orange Accent
+   ========================================================================== */
+:root {
+  /* Core Surface Architecture */
+  --color-bg: #090C0E;             /* Deep Black canvas */
+  --color-surface: #171B1D;        /* Secondary Dark Charcoal surface */
+  --color-surface-hover: #1F2427;  /* Hover card surface */
+  --color-surface-elevated: #202527;/* Raised surface / modals / dropdowns */
+  --color-surface-subtle: #121517; /* Inset container / field background */
+
+  /* High Contrast Editorial Typography */
+  --color-text-primary: #FFFFFF;    /* Crisp White primary headings & text */
+  --color-text-secondary: #A5A9AC;  /* Muted cool gray supporting text */
+  --color-text-muted: #6B7280;      /* Dimmed labels, subtle metadata */
+  --color-text-inverse: #090C0E;    /* Dark inverse text on bright surfaces */
+
+  /* Thin Architectural Borders */
+  --color-border: #303638;          /* 1px subtle structural border */
+  --color-border-subtle: #202527;   /* Ultra-fine interior divider */
+  --color-border-hover: #4B5255;    /* Interactive border state */
+  --color-border-focus: #FF7900;    /* Focus border — Phenomenon Orange */
+
+  /* Phenomenon Studio Vibrant Orange Accent */
+  --color-primary: #FF7900;
+  --color-primary-hover: #E66D00;
+  --color-primary-active: #CC6100;
+  --color-primary-subtle: rgba(255, 121, 0, 0.12);
+  --color-primary-glow: rgba(255, 121, 0, 0.25);
+  --color-primary-text: #FF7900;
+
+  /* Strategic High-Contrast Light Surface */
+  --color-light-bg: #F4F4F2;
+  --color-light-text: #090C0E;
+  --color-light-border: #D8D8D5;
+
+  /* Functional Status Colors */
+  --color-success: #22C55E;
+  --color-success-hover: #16A34A;
+  --color-success-subtle: rgba(34, 197, 94, 0.12);
+  --color-success-text: #4ADE80;
+
+  --color-warning: #F59E0B;
+  --color-warning-hover: #D97706;
+  --color-warning-subtle: rgba(245, 158, 11, 0.12);
+  --color-warning-text: #FBBF24;
+
+  --color-danger: #EF4444;
+  --color-danger-hover: #DC2626;
+  --color-danger-subtle: rgba(239, 68, 68, 0.12);
+  --color-danger-text: #F87171;
+
+  --color-info: #0EA5E9;
+  --color-info-subtle: rgba(14, 165, 233, 0.12);
+  --color-info-text: #38BDF8;
+
+  /* Exam Question State Palette (High-Contrast & Legible) */
+  --state-not-visited-bg: #121517;
+  --state-not-visited-border: #303638;
+  --state-not-visited-text: #A5A9AC;
+
+  --state-not-answered-bg: rgba(239, 68, 68, 0.14);
+  --state-not-answered-border: #EF4444;
+  --state-not-answered-text: #FCA5A5;
+
+  --state-answered-bg: rgba(34, 197, 94, 0.14);
+  --state-answered-border: #22C55E;
+  --state-answered-text: #86EFAC;
+
+  --state-review-bg: rgba(245, 158, 11, 0.14);
+  --state-review-border: #F59E0B;
+  --state-review-text: #FDE68A;
+
+  --state-ans-review-bg: rgba(168, 85, 247, 0.14);
+  --state-ans-review-border: #A855F7;
+  --state-ans-review-text: #D8B4FE;
+
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 2rem;       /* 32px */
+  --font-size-4xl: 2.75rem;    /* 44px */
+  --font-size-5xl: 3.5rem;     /* 56px */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  --line-height-tight: 1.15;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+
+  /* Border Radii (Restrained & Architectural) */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows (Minimal, thin borders favored over heavy drop-shadows) */
+  --shadow-xs: none;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7);
+  --shadow-focus: 0 0 0 2px rgba(255, 121, 0, 0.35);
+  --shadow-focus-danger: 0 0 0 2px rgba(239, 68, 68, 0.35);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 240ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Z-Index Hierarchy */
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-modal-backdrop: 1200;
+  --z-modal: 1300;
+  --z-toast: 1400;
+}

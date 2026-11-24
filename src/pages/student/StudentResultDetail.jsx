@@ -1,0 +1,375 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth.js';
+import { getResults } from '../../services/resultService.js';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  Button,
+  Badge,
+  LoadingSpinner,
+} from '../../components/common';
+import {
+  Award,
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+  Clock,
+  ArrowLeft,
+  Printer,
+  ShieldCheck,
+  AlertCircle,
+  FileText,
+  User,
+} from 'lucide-react';
+import { formatDateTime, formatDuration } from '../../utils/formatters.js';
+
+const getOptionText = (options, optKey) => {
+  if (!options) return '';
+  if (Array.isArray(options)) {
+    const found = options.find((o) => o.id === optKey);
+    return found ? (found.text || '') : '';
+  }
+  return options[optKey] || '';
+};
+
+export function StudentResultDetail() {
+  const { resultId } = useParams();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!currentUser || !resultId) return;
+
+    try {
+      const allResults = getResults();
+      const found = allResults.find((r) => r.id === resultId);
+
+      if (!found) {
+        setError('Scorecard record not found.');
+        setLoading(false);
+        return;
+      }
+
+      // Security check: ensure student can only view their own results (unless admin)
+      if (currentUser.role === 'student' && found.studentSnapshot?.id !== currentUser.id) {
+        setError('You are not authorized to view this candidate scorecard.');
+        setLoading(false);
+        return;
+      }
+
+      setResult(found);
+    } catch (err) {
+      console.error('Error fetching result detail:', err);
+      setError('An error occurred while loading result details.');
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser, resultId]);
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
+        <LoadingSpinner message="Retrieving institutional scorecard..." />
+      </div>
+    );
+  }
+
+  if (error || !result) {
+    return (
+      <div style={{ maxWidth: '560px', margin: '3rem auto' }}>
+        <Card>
+          <CardHeader>
+            <CardTitle style={{ color: 'var(--color-danger)' }}>Record Unavailable</CardTitle>
+            <CardDescription>{error || 'Requested scorecard could not be retrieved.'}</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Link to="/student/results" style={{ textDecoration: 'none' }}>
+              <Button variant="secondary" iconLeft={<ArrowLeft size={14} />}>
+                Back to My Results
+              </Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
+  const {
+    examTitle,
+    examSnapshot,
+    studentSnapshot,
+    marksObtained,
+    totalMarks,
+    percentage,
+    isPassed,
+    submittedAt,
+    durationTakenSeconds,
+    submissionType,
+    correctCount,
+    incorrectCount,
+    unansweredCount,
+    totalQuestions,
+    answersBreakdown = [],
+  } = result;
+
+  const durationMins = Math.round((durationTakenSeconds || 0) / 60);
+
+  return (
+    <div style={{ maxWidth: '920px', margin: '0 auto', paddingBottom: '3rem' }}>
+      {/* Navigation and Print Actions */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+        <Link
+          to="/student/results"
+          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.8125rem', color: 'var(--color-text-secondary)' }}
+        >
+          <ArrowLeft size={14} />
+          <span>Back to My Results</span>
+        </Link>
+
+        <Button
+          variant="secondary"
+          size="sm"
+          iconLeft={<Printer size={14} />}
+          onClick={() => window.print()}
+        >
+          Print Scorecard
+        </Button>
+      </div>
+
+      {/* Main Score Hero Card */}
+      <Card style={{ marginBottom: '1.75rem', overflow: 'hidden' }}>
+        <div
+          style={{
+            height: '6px',
+            backgroundColor: isPassed ? 'var(--color-success)' : 'var(--color-danger)',
+          }}
+        />
+
+        <CardHeader>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
+                <Badge variant="neutral" size="sm">{examSnapshot?.category || 'General'}</Badge>
+                <Badge variant={isPassed ? 'success' : 'danger'} size="md" dot>
+                  {isPassed ? 'Passed' : 'Failed'}
+                </Badge>
+              </div>
+              <CardTitle style={{ fontSize: '1.5rem' }}>{examTitle || examSnapshot?.title}</CardTitle>
+              <CardDescription>
+                Candidate: <strong>{studentSnapshot?.fullName}</strong> ({studentSnapshot?.studentId}) • Submitted on {formatDateTime(submittedAt)}
+              </CardDescription>
+            </div>
+
+            {/* Big Percentage Badge */}
+            <div
+              style={{
+                textAlign: 'right',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '2.5rem',
+                  fontWeight: 800,
+                  color: isPassed ? 'var(--color-success-text)' : 'var(--color-danger-text)',
+                  lineHeight: 1,
+                }}
+              >
+                {percentage}%
+              </div>
+              <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
+                Score: <strong>{marksObtained}</strong> / {totalMarks} pts
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          {/* Key Metrics Strip */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '0.75rem',
+              padding: '1rem',
+              backgroundColor: 'var(--color-surface-subtle)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--color-border)',
+              textAlign: 'center',
+            }}
+          >
+            <div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Correct Answers</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-success-text)', marginTop: '0.125rem' }}>
+                {correctCount} <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>/ {totalQuestions}</span>
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Incorrect Answers</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-danger-text)', marginTop: '0.125rem' }}>
+                {incorrectCount}
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Unanswered</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-muted)', marginTop: '0.125rem' }}>
+                {unansweredCount}
+              </div>
+            </div>
+
+            <div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)' }}>Time Taken</div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '0.125rem' }}>
+                {durationMins > 0 ? `${durationMins} min` : `${durationTakenSeconds}s`}
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+            <span>Passing threshold: <strong>{examSnapshot?.passingPercentage || 40}%</strong></span>
+            <span>Submission mode: <strong style={{ textTransform: 'capitalize' }}>{submissionType === 'auto-timer' ? 'Automatic (Timer Expired)' : 'Manual Candidate Submission'}</strong></span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Itemized Questions Breakdown */}
+      <div style={{ marginBottom: '1.5rem' }}>
+        <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.25rem' }}>
+          Detailed Answer Key & Evaluation
+        </h2>
+        <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginBottom: '1.25rem' }}>
+          Review each question, your chosen option, the verified answer, and institutional explanations.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {answersBreakdown.map((item, index) => {
+            const hasChosen = item.studentAnswer !== null && item.studentAnswer !== undefined;
+
+            return (
+              <Card key={item.questionId || index}>
+                <CardHeader style={{ paddingBottom: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: 'var(--color-text-muted)' }}>
+                        Question {index + 1}
+                      </span>
+                      {item.isCorrect ? (
+                        <Badge variant="success" size="sm">Correct</Badge>
+                      ) : !hasChosen ? (
+                        <Badge variant="neutral" size="sm">Unanswered</Badge>
+                      ) : (
+                        <Badge variant="danger" size="sm">Incorrect</Badge>
+                      )}
+                    </div>
+
+                    <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                      {item.marksAwarded} / {item.maxMarks} marks
+                    </div>
+                  </div>
+
+                  <div style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--color-text-primary)', lineHeight: 1.5 }}>
+                    {item.questionText}
+                  </div>
+                </CardHeader>
+
+                <CardContent>
+                  {/* Options List */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
+                    {['A', 'B', 'C', 'D'].map((optKey) => {
+                      const optText = getOptionText(item.options, optKey);
+                      const isCandidateChoice = item.studentAnswer === optKey;
+                      const isCorrectChoice = item.correctAnswer === optKey;
+
+                      let borderColor = 'var(--color-border)';
+                      let bgColor = 'var(--color-surface)';
+                      let textColor = 'var(--color-text-primary)';
+
+                      if (isCorrectChoice) {
+                        borderColor = 'var(--color-success)';
+                        bgColor = 'var(--color-success-subtle)';
+                        textColor = 'var(--color-success-text)';
+                      } else if (isCandidateChoice && !item.isCorrect) {
+                        borderColor = 'var(--color-danger)';
+                        bgColor = 'var(--color-danger-subtle)';
+                        textColor = 'var(--color-danger-text)';
+                      }
+
+                      return (
+                        <div
+                          key={optKey}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '0.625rem 0.875rem',
+                            borderRadius: 'var(--radius-md)',
+                            border: `1px solid ${borderColor}`,
+                            backgroundColor: bgColor,
+                            fontSize: '0.8125rem',
+                            color: textColor,
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                            <strong style={{ width: '18px' }}>{optKey}.</strong>
+                            <span>{optText}</span>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', fontWeight: 600 }}>
+                            {isCorrectChoice && (
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--color-success-text)' }}>
+                                <CheckCircle2 size={14} /> Correct Answer
+                              </span>
+                            )}
+                            {isCandidateChoice && (
+                              <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: item.isCorrect ? 'var(--color-success-text)' : 'var(--color-danger-text)' }}>
+                                {item.isCorrect ? '(Your Selection)' : <><XCircle size={14} /> Your Selection</>}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Explanation Callout */}
+                  {item.explanation && (
+                    <div
+                      style={{
+                        padding: '0.75rem',
+                        backgroundColor: 'var(--color-surface-subtle)',
+                        borderRadius: 'var(--radius-md)',
+                        fontSize: '0.75rem',
+                        color: 'var(--color-text-secondary)',
+                        borderLeft: '3px solid var(--color-primary)',
+                      }}
+                    >
+                      <strong style={{ color: 'var(--color-text-primary)', display: 'block', marginBottom: '0.25rem' }}>
+                        Explanation:
+                      </strong>
+                      {item.explanation}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default StudentResultDetail;
