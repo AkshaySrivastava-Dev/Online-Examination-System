@@ -16,6 +16,8 @@ import {
   EmptyState,
   PageTransition,
   FloatingBackgroundElements,
+  StaggerContainer,
+  StaggerItem,
 } from '../../components/common';
 import {
   BookOpen,
@@ -140,37 +142,45 @@ export function StudentDashboard() {
         </div>
       </div>
 
-      {/* Metric StatCards Grid */}
-      <div className="grid grid-cols-4 lg-grid-cols-2 md-grid-cols-1 gap-4" style={{ marginBottom: '2.5rem' }}>
-        <StatCard
-          title="Available Tests"
-          value={availableExams.length}
-          subtitle="Open for attempt right now"
-          icon={<BookOpen size={16} />}
-          badge={<Badge variant="success" size="sm" dot>Open</Badge>}
-        />
-        <StatCard
-          title="Upcoming Tests"
-          value={upcomingExams.length}
-          subtitle="Scheduled on calendar"
-          icon={<Calendar size={16} />}
-          badge={<Badge variant="primary" size="sm">Scheduled</Badge>}
-        />
-        <StatCard
-          title="Tests Completed"
-          value={completedCount}
-          subtitle={`${passedCount} test${passedCount === 1 ? '' : 's'} passed`}
-          icon={<CheckCircle2 size={16} />}
-          badge={<Badge variant="neutral" size="sm">History</Badge>}
-        />
-        <StatCard
-          title="Average Score"
-          value={`${avgScore}%`}
-          subtitle={`Pass rate: ${completedCount > 0 ? ((passedCount / completedCount) * 100).toFixed(0) : 0}%`}
-          icon={<TrendingUp size={16} />}
-          badge={<Badge variant={Number(avgScore) >= 60 ? 'success' : 'warning'} size="sm">Academic</Badge>}
-        />
-      </div>
+      {/* Metric StatCards Grid with Staggered Entrance */}
+      <StaggerContainer className="grid grid-cols-4 lg-grid-cols-2 md-grid-cols-1 gap-4" style={{ marginBottom: '2.5rem' }}>
+        <StaggerItem>
+          <StatCard
+            title="Available Tests"
+            value={availableExams.length}
+            subtitle="Open for attempt right now"
+            icon={<BookOpen size={16} />}
+            badge={<Badge variant="success" size="sm" dot>Open</Badge>}
+          />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard
+            title="Upcoming Tests"
+            value={upcomingExams.length}
+            subtitle="Scheduled on calendar"
+            icon={<Calendar size={16} />}
+            badge={<Badge variant="primary" size="sm">Scheduled</Badge>}
+          />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard
+            title="Tests Completed"
+            value={completedCount}
+            subtitle={`${passedCount} test${passedCount === 1 ? '' : 's'} passed`}
+            icon={<CheckCircle2 size={16} />}
+            badge={<Badge variant="neutral" size="sm">History</Badge>}
+          />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard
+            title="Average Score"
+            value={`${avgScore}%`}
+            subtitle={`Pass rate: ${completedCount > 0 ? ((passedCount / completedCount) * 100).toFixed(0) : 0}%`}
+            icon={<TrendingUp size={16} />}
+            badge={<Badge variant={Number(avgScore) >= 60 ? 'success' : 'warning'} size="sm">Academic</Badge>}
+          />
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Available Examinations Section */}
       <section style={{ marginBottom: '2.5rem' }}>
@@ -192,66 +202,68 @@ export function StudentDashboard() {
             description="There are no examinations available to take right now. Check the upcoming schedule for future dates."
           />
         ) : (
-          <div className="grid grid-cols-3 lg-grid-cols-2 md-grid-cols-1 gap-4">
+          <StaggerContainer className="grid grid-cols-3 lg-grid-cols-2 md-grid-cols-1 gap-4">
             {availableExams.slice(0, 3).map((exam) => {
               const prev = studentResults.find((r) => r.examId === exam.id);
               const isLocked = prev && !exam.allowRetake;
 
               return (
-                <Card key={exam.id} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <CardHeader>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <Badge variant="neutral" size="sm">{exam.category || 'General'}</Badge>
-                      <Badge variant={isLocked ? 'neutral' : 'success'} size="sm" dot>
-                        {isLocked ? 'Completed' : 'Open'}
-                      </Badge>
-                    </div>
-                    <CardTitle style={{ fontSize: '1rem', marginTop: '4px' }}>{exam.title}</CardTitle>
-                    <CardDescription style={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {exam.description || 'Institutional test evaluation session.'}
-                    </CardDescription>
-                  </CardHeader>
+                <StaggerItem key={exam.id} style={{ display: 'flex' }}>
+                  <Card style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%', transition: 'transform 0.15s ease, box-shadow 0.15s ease' }}>
+                    <CardHeader>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                        <Badge variant="neutral" size="sm">{exam.category || 'General'}</Badge>
+                        <Badge variant={isLocked ? 'neutral' : 'success'} size="sm" dot>
+                          {isLocked ? 'Completed' : 'Open'}
+                        </Badge>
+                      </div>
+                      <CardTitle style={{ fontSize: '1rem', marginTop: '4px' }}>{exam.title}</CardTitle>
+                      <CardDescription style={{ lineClamp: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {exam.description || 'Institutional test evaluation session.'}
+                      </CardDescription>
+                    </CardHeader>
 
-                  <CardContent style={{ paddingTop: 0 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--color-text-secondary)', padding: '0.625rem', backgroundColor: 'var(--color-surface-subtle)', borderRadius: 'var(--radius-md)' }}>
-                      <div>
-                        <span>Duration: </span>
-                        <strong>{formatDuration(exam.durationMinutes)}</strong>
+                    <CardContent style={{ paddingTop: 0 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem', fontSize: '0.75rem', color: 'var(--color-text-secondary)', padding: '0.625rem', backgroundColor: 'var(--color-surface-subtle)', borderRadius: 'var(--radius-md)' }}>
+                        <div>
+                          <span>Duration: </span>
+                          <strong>{formatDuration(exam.durationMinutes)}</strong>
+                        </div>
+                        <div>
+                          <span>Total Marks: </span>
+                          <strong>{exam.totalMarks} pts</strong>
+                        </div>
+                        <div>
+                          <span>Pass Mark: </span>
+                          <strong>{exam.passingPercentage}%</strong>
+                        </div>
+                        <div>
+                          <span>Questions: </span>
+                          <strong>{exam.questionCount || 0} MCQs</strong>
+                        </div>
                       </div>
-                      <div>
-                        <span>Total Marks: </span>
-                        <strong>{exam.totalMarks} pts</strong>
-                      </div>
-                      <div>
-                        <span>Pass Mark: </span>
-                        <strong>{exam.passingPercentage}%</strong>
-                      </div>
-                      <div>
-                        <span>Questions: </span>
-                        <strong>{exam.questionCount || 0} MCQs</strong>
-                      </div>
-                    </div>
-                  </CardContent>
+                    </CardContent>
 
-                  <CardFooter style={{ backgroundColor: '#fff', borderTop: 'none', paddingTop: 0 }}>
-                    {isLocked ? (
-                      <Link to={`/student/results/${prev.id}`} style={{ width: '100%', textDecoration: 'none' }}>
-                        <Button variant="secondary" size="sm" style={{ width: '100%' }}>
-                          View My Score ({prev.percentage}%)
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Link to={`/student/exam/${exam.id}/instructions`} style={{ width: '100%', textDecoration: 'none' }}>
-                        <Button variant="primary" size="sm" style={{ width: '100%' }} iconLeft={<Play size={14} />}>
-                          {prev ? 'Retake Examination' : 'Start Examination'}
-                        </Button>
-                      </Link>
-                    )}
-                  </CardFooter>
-                </Card>
+                    <CardFooter style={{ backgroundColor: '#fff', borderTop: 'none', paddingTop: 0 }}>
+                      {isLocked ? (
+                        <Link to={`/student/results/${prev.id}`} style={{ width: '100%', textDecoration: 'none' }}>
+                          <Button variant="secondary" size="sm" style={{ width: '100%' }}>
+                            View My Score ({prev.percentage}%)
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Link to={`/student/exam/${exam.id}/instructions`} style={{ width: '100%', textDecoration: 'none' }}>
+                          <Button variant="primary" size="sm" style={{ width: '100%' }} iconLeft={<Play size={14} />}>
+                            {prev ? 'Retake Examination' : 'Start Examination'}
+                          </Button>
+                        </Link>
+                      )}
+                    </CardFooter>
+                  </Card>
+                </StaggerItem>
               );
             })}
-          </div>
+          </StaggerContainer>
         )}
       </section>
 
@@ -275,9 +287,9 @@ export function StudentDashboard() {
             description="You have not submitted any test attempts yet. Completed examinations will be archived here with detailed breakdown sheets."
           />
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <StaggerContainer style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {studentResults.slice(0, 3).map((res) => (
-              <div
+              <StaggerItem
                 key={res.id}
                 style={{
                   display: 'flex',
@@ -321,9 +333,9 @@ export function StudentDashboard() {
                     </Button>
                   </Link>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </section>
     </PageTransition>

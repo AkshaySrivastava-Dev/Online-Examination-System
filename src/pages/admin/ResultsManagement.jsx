@@ -17,6 +17,8 @@ import {
   StatCard,
   PageTransition,
   FloatingBackgroundElements,
+  StaggerContainer,
+  StaggerItem,
 } from '../../components/common';
 import {
   Award,
@@ -118,8 +120,8 @@ export function ResultsManagement() {
         </div>
       </div>
 
-      {/* KPI Summary Section with Real Data */}
-      <div
+      {/* KPI Summary Section with Real Data and Staggered Entrance */}
+      <StaggerContainer
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -127,46 +129,54 @@ export function ResultsManagement() {
           marginBottom: '1.5rem',
         }}
       >
-        <StatCard
-          title="Total Attempts"
-          value={totalAttempts}
-          subtitle="Submitted candidate tests"
-          icon={<BookOpen size={16} />}
-        />
-        <StatCard
-          title="Institutional Pass Rate"
-          value={`${passRate}%`}
-          subtitle={`${passedAttempts} of ${totalAttempts} passed`}
-          badge={
-            <Badge variant={passRate >= 60 ? 'success' : 'warning'} size="xs" dot>
-              {passRate >= 60 ? 'Healthy' : 'Developing'}
-            </Badge>
-          }
-          icon={<Award size={16} />}
-        />
-        <StatCard
-          title="Average Score"
-          value={`${avgScore}%`}
-          subtitle="Overall mean percentage"
-          badge={
-            <Badge variant="neutral" size="xs">
-              Mean
-            </Badge>
-          }
-          icon={<Activity size={16} />}
-        />
-        <StatCard
-          title="ExamFair™ Integrity"
-          value={`${avgIntegrity}%`}
-          subtitle={`${cleanIntegrityCount} sessions verified clean`}
-          badge={
-            <Badge variant="success" size="xs" dot>
-              Audit Verified
-            </Badge>
-          }
-          icon={<ShieldCheck size={16} />}
-        />
-      </div>
+        <StaggerItem>
+          <StatCard
+            title="Total Attempts"
+            value={totalAttempts}
+            subtitle="Submitted candidate tests"
+            icon={<BookOpen size={16} />}
+          />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard
+            title="Institutional Pass Rate"
+            value={`${passRate}%`}
+            subtitle={`${passedAttempts} of ${totalAttempts} passed`}
+            badge={
+              <Badge variant={passRate >= 60 ? 'success' : 'warning'} size="xs" dot>
+                {passRate >= 60 ? 'Healthy' : 'Developing'}
+              </Badge>
+            }
+            icon={<Award size={16} />}
+          />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard
+            title="Average Score"
+            value={`${avgScore}%`}
+            subtitle="Overall mean percentage"
+            badge={
+              <Badge variant="neutral" size="xs">
+                Mean
+              </Badge>
+            }
+            icon={<Activity size={16} />}
+          />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard
+            title="ExamFair™ Integrity"
+            value={`${avgIntegrity}%`}
+            subtitle={`${cleanIntegrityCount} sessions verified clean`}
+            badge={
+              <Badge variant="success" size="xs" dot>
+                Audit Verified
+              </Badge>
+            }
+            icon={<ShieldCheck size={16} />}
+          />
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Filter and Search Bar Card */}
       <Card style={{ marginBottom: '1.5rem' }}>

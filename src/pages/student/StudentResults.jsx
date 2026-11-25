@@ -20,6 +20,9 @@ import {
   EmptyState,
   PageTransition,
   FloatingBackgroundElements,
+  AnimatedCounter,
+  StaggerContainer,
+  StaggerItem,
 } from '../../components/common';
 import {
   Award,
@@ -171,35 +174,44 @@ export function StudentResults() {
         </div>
       </div>
 
-      {/* Summary KPI Strip */}
-      <div className="grid grid-cols-3 md-grid-cols-1 gap-4" style={{ marginBottom: '1.5rem' }}>
-        <Card style={{ padding: '1rem var(--space-5)' }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Completed Attempts
-          </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '0.25rem' }}>
-            {stats.total}
-          </div>
-        </Card>
+      {/* Summary KPI Strip with Stagger and Animated Counters */}
+      <StaggerContainer className="grid grid-cols-3 md-grid-cols-1 gap-4" style={{ marginBottom: '1.5rem' }}>
+        <StaggerItem>
+          <Card style={{ padding: '1rem var(--space-5)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Completed Attempts
+            </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: '0.25rem', fontFamily: 'var(--font-mono)' }}>
+              <AnimatedCounter value={stats.total} />
+            </div>
+          </Card>
+        </StaggerItem>
 
-        <Card style={{ padding: '1rem var(--space-5)' }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Passed Assessments
-          </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-success-text)', marginTop: '0.25rem' }}>
-            {stats.passed} <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>({stats.total > 0 ? Math.round((stats.passed / stats.total) * 100) : 0}%)</span>
-          </div>
-        </Card>
+        <StaggerItem>
+          <Card style={{ padding: '1rem var(--space-5)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Passed Assessments
+            </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-success-text)', marginTop: '0.25rem', fontFamily: 'var(--font-mono)' }}>
+              <AnimatedCounter value={stats.passed} />{' '}
+              <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-muted)' }}>
+                ({stats.total > 0 ? Math.round((stats.passed / stats.total) * 100) : 0}%)
+              </span>
+            </div>
+          </Card>
+        </StaggerItem>
 
-        <Card style={{ padding: '1rem var(--space-5)' }}>
-          <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Cumulative Average
-          </div>
-          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-primary-text)', marginTop: '0.25rem' }}>
-            {stats.avg}%
-          </div>
-        </Card>
-      </div>
+        <StaggerItem>
+          <Card style={{ padding: '1rem var(--space-5)' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Cumulative Average
+            </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-primary-text)', marginTop: '0.25rem', fontFamily: 'var(--font-mono)' }}>
+              <AnimatedCounter value={`${stats.avg}%`} />
+            </div>
+          </Card>
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Filter and Table Card */}
       <Card>

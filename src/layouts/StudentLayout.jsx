@@ -14,6 +14,7 @@ import {
   Brain,
 } from 'lucide-react';
 import { ThemeToggle } from '../components/common/ThemeToggle';
+import { VerityLogo } from '../components/common';
 
 export function StudentLayout() {
   const { currentUser, logout } = useAuth();
@@ -34,29 +35,8 @@ export function StudentLayout() {
       <header className="student-navbar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
           {/* Brand */}
-          <Link to="/student/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-            <div
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--color-primary)',
-                color: '#1A1A1A',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <GraduationCap size={16} strokeWidth={2.5} />
-            </div>
-            <div>
-              <span style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.02em', display: 'block' }}>
-                VERITY
-              </span>
-              <span style={{ fontSize: '0.625rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
-                Candidate Portal
-              </span>
-            </div>
+          <Link to="/student/dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <VerityLogo variant="compact" size="md" subtitle="Candidate Portal" />
           </Link>
 
           {/* Desktop Nav Links */}

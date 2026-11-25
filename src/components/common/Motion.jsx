@@ -195,6 +195,131 @@ export function AnimatedCounter({ value, duration = 0.8, formatter }) {
 }
 
 /**
+ * Stagger Container and Item Variants
+ */
+export const staggerContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.03,
+    },
+  },
+};
+
+export const staggerItemVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+export const cardHoverVariants = {
+  rest: { y: 0, transition: { duration: 0.15, ease: 'easeOut' } },
+  hover: { y: -2, transition: { duration: 0.15, ease: 'easeOut' } },
+};
+
+/**
+ * Reusable Stagger Container for Grids and Lists
+ */
+export function StaggerContainer({ children, className = '', style = {}, delay = 0.03 }) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return <div className={className} style={style}>{children}</div>;
+  }
+
+  const variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: delay,
+      },
+    },
+  };
+
+  return (
+    <motion.div
+      variants={variants}
+      initial="hidden"
+      animate="visible"
+      className={className}
+      style={style}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/**
+ * Reusable Stagger Item for cards, rows, and grid items
+ */
+export function StaggerItem({ children, className = '', style = {} }) {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return <div className={className} style={style}>{children}</div>;
+  }
+
+  return (
+    <motion.div
+      variants={staggerItemVariants}
+      className={className}
+      style={style}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/**
+ * Smooth Animated Progress Bar for ExamDNA, scorecards, and study plans
+ */
+export function AnimatedProgressBar({
+  value = 0,
+  max = 100,
+  height = '8px',
+  color = 'var(--color-primary)',
+  backgroundColor = 'var(--color-surface-hover)',
+  borderRadius = 'var(--radius-xs)',
+  style = {},
+}) {
+  const shouldReduceMotion = useReducedMotion();
+  const clampedVal = Math.min(Math.max(Number(value) || 0, 0), max);
+  const percentage = max > 0 ? (clampedVal / max) * 100 : 0;
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        height,
+        backgroundColor,
+        borderRadius,
+        overflow: 'hidden',
+        position: 'relative',
+        ...style,
+      }}
+    >
+      <motion.div
+        initial={shouldReduceMotion ? false : { width: '0%' }}
+        animate={{ width: `${percentage}%` }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          height: '100%',
+          backgroundColor: color,
+          borderRadius,
+        }}
+      />
+    </div>
+  );
+}
+
+/**
  * Premium Skeleton Loader for table rows and cards
  */
 export function SkeletonLoader({ width = '100%', height = '20px', borderRadius = 'var(--radius-sm)', style = {} }) {

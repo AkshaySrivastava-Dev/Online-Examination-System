@@ -3,6 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { BookOpen, ShieldCheck, CheckCircle2, Clock, Award } from 'lucide-react';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { VerityLogo } from '../components/common';
 
 export function AuthLayout() {
   const { isAuthenticated, currentUser, isLoading } = useAuth();
@@ -59,30 +60,8 @@ export function AuthLayout() {
 
         {/* Top Branding */}
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--color-primary)',
-                color: '#1A1A1A',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: 'var(--shadow-xs)',
-              }}
-            >
-              <BookOpen size={20} strokeWidth={2.5} />
-            </div>
-            <div>
-              <span style={{ fontSize: '1.125rem', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--color-text-primary)', display: 'block' }}>
-                VERITY
-              </span>
-              <span style={{ fontSize: '0.6875rem', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700 }}>
-                Beyond the Score
-              </span>
-            </div>
+          <div style={{ marginBottom: '2.5rem' }}>
+            <VerityLogo variant="full" size="lg" />
           </div>
 
           <div style={{ maxWidth: '540px' }}>
@@ -218,29 +197,8 @@ export function AuthLayout() {
       >
         <div style={{ width: '100%', maxWidth: '440px' }}>
           {/* Mobile Header (Hidden on Desktop) */}
-          <div className="auth-mobile-header" style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '44px',
-                height: '44px',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--color-primary)',
-                color: '#090C0E',
-                marginBottom: '0.75rem',
-                boxShadow: '0 0 15px rgba(255, 121, 0, 0.35)',
-              }}
-            >
-              <BookOpen size={22} strokeWidth={2.5} />
-            </div>
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#FFFFFF' }}>
-              ExamPro
-            </h1>
-            <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginTop: '2px' }}>
-              Online Examination & Assessment Management
-            </p>
+          <div className="auth-mobile-header" style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+            <VerityLogo variant="full" size="md" />
           </div>
 
           {/* Form Card */}
@@ -260,7 +218,7 @@ export function AuthLayout() {
             }}
           >
             <ShieldCheck size={14} color="var(--color-primary)" />
-            <span>Academic Project Simulation • Client-Side LocalStorage Engine</span>
+            <span>Institutional Assessment Engine • LocalStorage Resilience</span>
           </div>
         </div>
       </div>

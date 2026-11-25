@@ -14,6 +14,9 @@ import {
   LoadingSpinner,
   Modal,
   PageTransition,
+  AnimatedCounter,
+  StaggerContainer,
+  StaggerItem,
 } from '../../components/common';
 import {
   Award,
@@ -213,12 +216,13 @@ export function StudentResultDetail() {
                   fontWeight: 800,
                   color: isPassed ? 'var(--color-success-text)' : 'var(--color-danger-text)',
                   lineHeight: 1,
+                  fontFamily: 'var(--font-mono)',
                 }}
               >
-                {percentage}%
+                <AnimatedCounter value={`${percentage}%`} />
               </div>
               <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
-                Score: <strong>{marksObtained}</strong> / {totalMarks} pts
+                Score: <strong><AnimatedCounter value={marksObtained} /></strong> / {totalMarks} pts
               </div>
             </div>
           </div>
@@ -336,12 +340,13 @@ export function StudentResultDetail() {
           Review each question, your chosen option, the verified answer, and institutional explanations.
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <StaggerContainer style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {answersBreakdown.map((item, index) => {
             const hasChosen = item.studentAnswer !== null && item.studentAnswer !== undefined;
 
             return (
-              <Card key={item.questionId || index}>
+              <StaggerItem key={item.questionId || index}>
+                <Card>
                 <CardHeader style={{ paddingBottom: '0.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -446,9 +451,10 @@ export function StudentResultDetail() {
                   )}
                 </CardContent>
               </Card>
-            );
-          })}
-        </div>
+            </StaggerItem>
+          );
+        })}
+      </StaggerContainer>
       </div>
 
       {/* ExamReplay Modal */}

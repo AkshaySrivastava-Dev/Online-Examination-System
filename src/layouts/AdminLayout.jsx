@@ -14,6 +14,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { ThemeToggle } from '../components/common/ThemeToggle';
+import { VerityLogo } from '../components/common';
 
 export function AdminLayout() {
   const { currentUser, logout } = useAuth();
@@ -45,31 +46,7 @@ export function AdminLayout() {
       {/* Admin Sidebar */}
       <aside className={`admin-sidebar ${mobileOpen ? 'mobile-open' : ''}`}>
         <div className="admin-sidebar-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-            <div
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--color-primary)',
-                color: '#1A1A1A',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 800,
-              }}
-            >
-              <BookOpen size={16} strokeWidth={2.5} />
-            </div>
-            <div>
-              <span style={{ fontSize: '0.9375rem', fontWeight: 700, letterSpacing: '-0.02em', display: 'block', color: 'var(--color-text-primary)' }}>
-                VERITY
-              </span>
-              <span style={{ fontSize: '0.625rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
-                Institutional Oversight
-              </span>
-            </div>
-          </div>
+          <VerityLogo variant="compact" size="md" subtitle="Institutional Oversight" />
 
           <button
             type="button"
@@ -174,10 +151,6 @@ export function AdminLayout() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div className="topbar-live-badge" style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: 'var(--color-text-muted)', backgroundColor: 'var(--color-surface-subtle)', border: '1px solid var(--color-border)', padding: '0.25rem 0.625rem', borderRadius: 'var(--radius-sm)' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', display: 'inline-block' }} />
-              Demo Environment
-            </div>
             <ThemeToggle size="sm" />
           </div>
         </header>

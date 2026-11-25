@@ -28,5 +28,10 @@ export {
   FloatingBackgroundElements,
   AnimatedCounter,
   SkeletonLoader,
+  StaggerContainer,
+  StaggerItem,
+  AnimatedProgressBar,
 } from './Motion';
+export { VerityLogo, VeritySymbol } from './VerityLogo';
+export { IsometricBarChart } from './IsometricBarChart';
 

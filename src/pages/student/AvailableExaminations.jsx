@@ -16,6 +16,8 @@ import {
   EmptyState,
   PageTransition,
   FloatingBackgroundElements,
+  StaggerContainer,
+  StaggerItem,
 } from '../../components/common';
 import {
   BookOpen,
@@ -184,22 +186,22 @@ export function AvailableExaminations() {
           description="There are currently no active tests matching your search or category filter. Check upcoming schedules."
         />
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <StaggerContainer style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {filteredExams.map((exam) => {
             const pastResult = results.find((r) => r.examId === exam.id);
             const isCompleted = !!pastResult;
             const isLocked = isCompleted && !exam.allowRetake;
 
             return (
-              <Card
-                key={exam.id}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  overflow: 'hidden',
-                  transition: 'border-color var(--transition-fast)',
-                }}
-              >
+              <StaggerItem key={exam.id}>
+                <Card
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden',
+                    transition: 'border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast)',
+                  }}
+                >
                 {/* 1. Dedicated Header Badge Strip: Cleanly isolates badges from title */}
                 <div
                   style={{
@@ -353,10 +355,11 @@ export function AvailableExaminations() {
                   </div>
                 </div>
               </Card>
-            );
-          })}
-        </div>
-      )}
+            </StaggerItem>
+          );
+        })}
+      </StaggerContainer>
+    )}
     </PageTransition>
   );
 }

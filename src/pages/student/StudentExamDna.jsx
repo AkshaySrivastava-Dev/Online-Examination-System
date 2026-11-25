@@ -18,6 +18,10 @@ import {
   EmptyState,
   PageTransition,
   FloatingBackgroundElements,
+  AnimatedProgressBar,
+  AnimatedCounter,
+  StaggerContainer,
+  StaggerItem,
 } from '../../components/common';
 import {
   Brain,
@@ -450,7 +454,7 @@ export function StudentExamDna() {
               lineHeight: 1.45,
             }}
           >
-            <strong>Diagnostic Rules:</strong> Topics with &lt;5 questions are classified as <em>preliminary</em> and non-conclusive. Minimum 3 questions are strictly required before classifying a topic as weak or strong. Recommendations are pure deterministic mathematics derived from actual scorecards without black-box AI.
+            <strong>Diagnostic Rules:</strong> Topics with &lt;5 questions are classified as <em>preliminary</em> and non-conclusive. Minimum 3 questions are strictly required before classifying a topic as weak or strong. Recommendations are pure deterministic mathematics derived from actual scorecards and verified mastery metrics.
           </div>
         </CardContent>
       </Card>
@@ -538,30 +542,19 @@ export function StudentExamDna() {
                       </div>
                     </div>
 
-                    {/* Mini Score Bar */}
-                    <div
-                      style={{
-                        height: '6px',
-                        backgroundColor: 'var(--color-border)',
-                        borderRadius: '3px',
-                        overflow: 'hidden',
-                        marginBottom: '0.5rem',
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: '100%',
-                          width: `${item.priorityScore}%`,
-                          backgroundColor:
-                            item.priorityTier === 'Urgent'
-                              ? 'var(--color-danger)'
-                              : item.priorityTier === 'High'
-                              ? 'var(--color-warning)'
-                              : 'var(--color-primary)',
-                          borderRadius: '3px',
-                        }}
-                      />
-                    </div>
+                    {/* Mini Animated Score Bar */}
+                    <AnimatedProgressBar
+                      value={item.priorityScore}
+                      color={
+                        item.priorityTier === 'Urgent'
+                          ? 'var(--color-danger)'
+                          : item.priorityTier === 'High'
+                          ? 'var(--color-warning)'
+                          : 'var(--color-primary)'
+                      }
+                      height="6px"
+                      style={{ marginBottom: '0.5rem' }}
+                    />
 
                     {/* Breakdown dimensions */}
                     <div
@@ -682,26 +675,13 @@ export function StudentExamDna() {
             </div>
           </div>
 
-          {/* Interactive Progress Bar */}
-          <div
-            style={{
-              height: '8px',
-              backgroundColor: 'var(--color-border)',
-              borderRadius: '4px',
-              overflow: 'hidden',
-              marginTop: '0.75rem',
-            }}
-          >
-            <div
-              style={{
-                height: '100%',
-                width: `${studyPlanProgress.progressPercentage}%`,
-                backgroundColor: studyPlanProgress.progressPercentage === 100 ? 'var(--color-success)' : 'var(--color-primary)',
-                borderRadius: '4px',
-                transition: 'width 0.3s ease',
-              }}
-            />
-          </div>
+          {/* Interactive Animated Progress Bar */}
+          <AnimatedProgressBar
+            value={studyPlanProgress.progressPercentage}
+            color={studyPlanProgress.progressPercentage === 100 ? 'var(--color-success)' : 'var(--color-primary)'}
+            height="8px"
+            style={{ marginTop: '0.75rem' }}
+          />
         </CardHeader>
         <CardContent>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
@@ -855,32 +835,19 @@ export function StudentExamDna() {
                       </div>
                     </div>
 
-                    {/* Progress Bar */}
-                    <div
-                      style={{
-                        height: '8px',
-                        width: '100%',
-                        backgroundColor: 'var(--color-border)',
-                        borderRadius: 'var(--radius-full)',
-                        overflow: 'hidden',
-                        position: 'relative',
-                      }}
-                    >
-                      <div
-                        style={{
-                          height: '100%',
-                          width: `${tm.accuracy}%`,
-                          backgroundColor:
-                            tm.status === 'strong'
-                              ? 'var(--color-success)'
-                              : tm.status === 'developing'
-                              ? 'var(--color-warning)'
-                              : 'var(--color-danger)',
-                          borderRadius: 'var(--radius-full)',
-                          transition: 'width 0.4s ease',
-                        }}
-                      />
-                    </div>
+                    {/* Animated Progress Bar */}
+                    <AnimatedProgressBar
+                      value={tm.accuracy}
+                      color={
+                        tm.status === 'strong'
+                          ? 'var(--color-success)'
+                          : tm.status === 'developing'
+                          ? 'var(--color-warning)'
+                          : 'var(--color-danger)'
+                      }
+                      height="8px"
+                      borderRadius="var(--radius-full)"
+                    />
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.375rem' }}>
                       <span style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)' }}>
@@ -1269,7 +1236,7 @@ export function StudentExamDna() {
                   Explainable next steps derived directly from topic mastery accuracy bands.
                 </CardDescription>
               </div>
-              <Badge variant="neutral" size="sm">Rule-Based · Non-AI</Badge>
+              <Badge variant="neutral" size="sm">Rule-Based Analysis</Badge>
             </div>
           </CardHeader>
           <CardContent>
@@ -1333,7 +1300,7 @@ export function StudentExamDna() {
                 lineHeight: 1.5,
               }}
             >
-              <strong>Transparent Methodology:</strong> Recommendations are strictly deterministic. &lt;60% accuracy triggers Core Revision (foundational review); 60–79% triggers Intermediate Practice (application strengthening); &ge;80% triggers Advanced Mastery (synthesis and complex challenges). No external AI models or black-box predictions are used.
+              <strong>Transparent Methodology:</strong> Recommendations are strictly deterministic. &lt;60% accuracy triggers Core Revision (foundational review); 60–79% triggers Intermediate Practice (application strengthening); &ge;80% triggers Advanced Mastery (synthesis and complex challenges).
             </div>
           </CardContent>
         </Card>

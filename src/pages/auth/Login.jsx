@@ -81,10 +81,9 @@ export function Login() {
       <CardHeader style={{ paddingBottom: 'var(--space-4)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
           <div className="eyebrow">PORTAL ACCESS</div>
-          <Badge variant="primary" size="sm">v1.0 Production</Badge>
         </div>
         <CardTitle style={{ fontSize: '1.625rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#FFFFFF' }}>
-          Sign in to ExamPro
+          Sign in to VERITY
         </CardTitle>
         <CardDescription style={{ color: 'var(--color-text-secondary)', marginTop: '0.25rem' }}>
           Enter your institutional credentials to access your examinations.
@@ -181,7 +180,7 @@ export function Login() {
             }}
           >
             <KeyRound size={13} />
-            <span>Demo Evaluation Credentials</span>
+            <span>Standard Test Accounts</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
