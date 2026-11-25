@@ -3,8 +3,12 @@
 @import './admin.css';
 @import './student.css';
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ==========================================================================
-   CSS Reset & Baseline — Dark Canvas Architecture
+   CSS Reset & Baseline — Dark Canvas Architecture (VERITY)
    ========================================================================== */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -30,17 +34,16 @@ body {
   line-height: var(--line-height-normal);
   min-height: 100vh;
   overflow-x: hidden;
-  selection-background-color: var(--color-primary);
-  selection-color: #000;
 }
 
 ::selection {
   background-color: var(--color-primary);
-  color: #090C0E;
+  color: #FFFFFF;
 }
 
-/* Typography Defaults — Bold Editorial Tone */
+/* Typography Defaults — Manrope Display Headings with Swiss Grid Alignment */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
   color: var(--color-text-primary);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
@@ -60,13 +63,13 @@ p {
 }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 a:hover {
-  color: var(--color-primary-hover);
+  color: #FFFFFF;
 }
 
 button, input, select, textarea {
@@ -80,7 +83,7 @@ button, input, select, textarea {
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
   letter-spacing: 0.16em;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
@@ -138,7 +141,7 @@ button, input, select, textarea {
 
 .w-full { width: 100%; }
 
-/* Module Page Header Styling (Phenomenon Studio Editorial Style) */
+/* Module Page Header Styling (Verity Swiss Editorial Style) */
 .module-header {
   display: flex;
   align-items: flex-end;
@@ -151,6 +154,7 @@ button, input, select, textarea {
 }
 
 .module-title-group h1 {
+  font-family: var(--font-display);
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.03em;
@@ -179,5 +183,15 @@ button, input, select, textarea {
   }
   .page-container {
     padding: var(--space-4);
+  }
+}
+
+/* Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

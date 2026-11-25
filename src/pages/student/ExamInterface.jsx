@@ -6,10 +6,13 @@ import { generateId } from '../../utils/idGenerator.js';
 import {
   startExamAttempt,
   recordAnswer,
+  recordConfidence,
+  recordQuestionTime,
   toggleMarkForReview,
   markQuestionVisited,
   getQuestionState,
   submitExamAttempt,
+  recordExamFairViolation,
 } from '../../services/examEngineService.js';
 import {
   Button,
@@ -27,6 +30,8 @@ import {
   ChevronRight,
   Send,
   ShieldAlert,
+  ShieldCheck,
+  Activity,
   ArrowLeft,
   Check,
 } from 'lucide-react';
@@ -57,6 +62,7 @@ export function ExamInterface() {
   const [questions, setQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
+  const [confidenceLevels, setConfidenceLevels] = useState({});
   const [markedForReview, setMarkedForReview] = useState([]);
   const [visitedQuestions, setVisitedQuestions] = useState([]);
   const [endTimestamp, setEndTimestamp] = useState(null);
@@ -66,6 +72,9 @@ export function ExamInterface() {
   const [lockError, setLockError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [initError, setInitError] = useState(null);
+
+  // Dwell timing tracking for ExamDNA Time Intelligence
+  const questionEnteredAtRef = useRef(Date.now());
 
   // Session / Suspension Watcher
   useEffect(() => {
@@ -91,6 +100,7 @@ export function ExamInterface() {
       setQuestions(res.questions || []);
       setEndTimestamp(res.attempt.endTimestamp);
       setAnswers(res.attempt.answers || {});
+      setConfidenceLevels(res.attempt.confidenceLevels || {});
       setMarkedForReview(res.attempt.markedForReview || []);
       setVisitedQuestions(res.attempt.visitedQuestions || []);
       setCurrentIndex(res.attempt.currentQuestionIndex || 0);
@@ -110,6 +120,16 @@ export function ExamInterface() {
       setLoading(false);
     }
   }, [currentUser, examId, info]);
+
+  // Record elapsed question dwell time for ExamDNA analytics
+  const flushCurrentQuestionTime = useCallback(() => {
+    if (!questions || !questions[currentIndex] || !currentUser) return;
+    const qId = questions[currentIndex].id;
+    const now = Date.now();
+    const elapsedSec = Math.max(1, Math.round((now - questionEnteredAtRef.current) / 1000));
+    questionEnteredAtRef.current = now;
+    recordQuestionTime(currentUser.id, examId, qId, elapsedSec);
+  }, [questions, currentIndex, currentUser, examId]);
 
   // Master Absolute Timer Countdown Loop
   useEffect(() => {
@@ -131,9 +151,40 @@ export function ExamInterface() {
     return () => clearInterval(interval);
   }, [endTimestamp, isSubmitting]);
 
+  // ExamFair Academic Integrity & Focus Tracking
+  useEffect(() => {
+    if (!currentUser || !examId) return;
+
+    const handleVisibility = () => {
+      if (document.hidden) {
+        recordExamFairViolation(currentUser.id, examId, {
+          type: 'TAB_SWITCH',
+          description: 'Candidate switched tabs or minimized examination window',
+        });
+        warning('ExamFair Advisory: Window unfocus event recorded in session telemetry.');
+      }
+    };
+
+    const handleCopy = () => {
+      recordExamFairViolation(currentUser.id, examId, {
+        type: 'COPY_ATTEMPT',
+        description: 'Clipboard copy attempt detected',
+      });
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    document.addEventListener('copy', handleCopy);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      document.removeEventListener('copy', handleCopy);
+    };
+  }, [currentUser, examId, warning]);
+
   // Auto-submit handler triggered when timer hits 0
   const handleAutoSubmit = useCallback(() => {
     setIsSubmitting(true);
+    flushCurrentQuestionTime();
     warning('Allocated examination time has expired. Submitting your answers automatically...');
 
     const subRes = submitExamAttempt(currentUser.id, examId, 'auto-timer');
@@ -143,11 +194,12 @@ export function ExamInterface() {
       toastError(subRes.error || 'Failed to finalize auto-submission.');
       navigate('/student/dashboard', { replace: true });
     }
-  }, [currentUser, examId, navigate, warning, toastError]);
+  }, [currentUser, examId, navigate, warning, toastError, flushCurrentQuestionTime]);
 
   // Manual submission handler
   const handleManualSubmit = () => {
     setIsSubmitting(true);
+    flushCurrentQuestionTime();
     const subRes = submitExamAttempt(currentUser.id, examId, 'manual');
 
     if (subRes.success) {
@@ -161,6 +213,20 @@ export function ExamInterface() {
 
   // Current active question
   const currentQuestion = questions[currentIndex];
+
+  // Confidence Level Selection (ExamDNA Intelligence)
+  const handleSelectConfidence = (level) => {
+    if (!currentQuestion) return;
+    const qId = currentQuestion.id;
+    const nextLevel = confidenceLevels[qId] === level ? null : level;
+    setConfidenceLevels((prev) => {
+      const next = { ...prev };
+      if (nextLevel) next[qId] = nextLevel;
+      else delete next[qId];
+      return next;
+    });
+    recordConfidence(currentUser.id, examId, qId, nextLevel);
+  };
 
   // Option selection
   const handleSelectOption = (optionKey) => {
@@ -211,6 +277,7 @@ export function ExamInterface() {
   // Navigate to question index
   const handleJumpToQuestion = (index) => {
     if (index < 0 || index >= questions.length) return;
+    flushCurrentQuestionTime();
     const targetQ = questions[index];
 
     if (targetQ && !visitedQuestions.includes(targetQ.id)) {
@@ -319,10 +386,36 @@ export function ExamInterface() {
           </div>
         </div>
 
-        {/* Center: Absolute Countdown Timer */}
-        <div className={`exam-timer-box ${isTimerWarning ? 'timer-warning' : ''}`} title="Absolute time remaining for submission">
-          <Clock size={16} />
-          <span>{timerDisplay}</span>
+        {/* Center: Absolute Countdown Timer & Telemetry Indicator */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className={`exam-timer-box ${isTimerWarning ? 'timer-warning' : ''}`} title="Absolute time remaining for submission">
+            <Clock size={16} />
+            <span>{timerDisplay}</span>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.375rem',
+              fontSize: '0.75rem',
+              color: 'var(--color-success)',
+              backgroundColor: 'rgba(44, 187, 93, 0.1)',
+              padding: '0.25rem 0.5rem',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid rgba(44, 187, 93, 0.2)',
+            }}
+            title="VERITY ExamFair active: proctoring telemetry enabled"
+          >
+            <ShieldCheck size={13} />
+            <span style={{ fontWeight: 600 }}>ExamFair™ Active</span>
+          </div>
+
+          {exam?.isAdaptive && (
+            <Badge variant="primary" size="sm">
+              Adaptive CAT Mode
+            </Badge>
+          )}
         </div>
 
         {/* Right: Submit Examination Action */}
@@ -428,6 +521,63 @@ export function ExamInterface() {
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Confidence Selection (ExamDNA Intelligence) */}
+              <div
+                style={{
+                  marginTop: '1.5rem',
+                  padding: '0.875rem 1.125rem',
+                  backgroundColor: 'var(--color-surface-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--color-border)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '0.75rem',
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-text-primary)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                    <span>Confidence Level</span>
+                    <span style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', fontWeight: 400 }}>(Optional · Powers ExamDNA™ Insights)</span>
+                  </div>
+                  <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)' }}>
+                    How sure are you about your selected response?
+                  </div>
+                </div>
+
+                <div style={{ display: 'inline-flex', gap: '0.5rem' }}>
+                  {[
+                    { key: 'Low', label: 'Low', color: '#94A3B8' },
+                    { key: 'Medium', label: 'Medium', color: 'var(--color-warning)' },
+                    { key: 'High', label: 'High', color: 'var(--color-success)' },
+                  ].map((lvl) => {
+                    const isSelected = confidenceLevels[currentQuestion.id] === lvl.key;
+                    return (
+                      <button
+                        key={lvl.key}
+                        type="button"
+                        onClick={() => handleSelectConfidence(lvl.key)}
+                        style={{
+                          padding: '0.3125rem 0.75rem',
+                          borderRadius: 'var(--radius-sm)',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          border: isSelected ? `1.5px solid ${lvl.color}` : '1px solid var(--color-border)',
+                          backgroundColor: isSelected ? 'var(--color-surface)' : 'transparent',
+                          color: isSelected ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+                          boxShadow: isSelected ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                        }}
+                      >
+                        {lvl.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           ) : (

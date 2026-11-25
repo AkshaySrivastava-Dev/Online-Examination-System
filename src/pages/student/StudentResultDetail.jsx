@@ -12,6 +12,8 @@ import {
   Button,
   Badge,
   LoadingSpinner,
+  Modal,
+  PageTransition,
 } from '../../components/common';
 import {
   Award,
@@ -25,8 +27,14 @@ import {
   AlertCircle,
   FileText,
   User,
+  Brain,
+  Sparkles,
+  Shield,
+  Activity,
 } from 'lucide-react';
 import { formatDateTime, formatDuration } from '../../utils/formatters.js';
+import { buildReplayTimeline } from '../../services/examReplayService.js';
+import { ExamReplayViewer } from '../../components/exam/ExamReplayViewer.jsx';
 
 const getOptionText = (options, optKey) => {
   if (!options) return '';
@@ -45,6 +53,7 @@ export function StudentResultDetail() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showReplayModal, setShowReplayModal] = useState(false);
 
   useEffect(() => {
     if (!currentUser || !resultId) return;
@@ -124,7 +133,7 @@ export function StudentResultDetail() {
   const durationMins = Math.round((durationTakenSeconds || 0) / 60);
 
   return (
-    <div style={{ maxWidth: '920px', margin: '0 auto', paddingBottom: '3rem' }}>
+    <PageTransition style={{ maxWidth: '920px', margin: '0 auto', paddingBottom: '3rem' }}>
       {/* Navigation and Print Actions */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
         <Link
@@ -135,14 +144,34 @@ export function StudentResultDetail() {
           <span>Back to My Results</span>
         </Link>
 
-        <Button
-          variant="secondary"
-          size="sm"
-          iconLeft={<Printer size={14} />}
-          onClick={() => window.print()}
-        >
-          Print Scorecard
-        </Button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+          <Button
+            variant="secondary"
+            size="sm"
+            iconLeft={<Sparkles size={14} />}
+            onClick={() => setShowReplayModal(true)}
+            style={{ borderColor: 'rgba(255, 161, 22, 0.4)' }}
+          >
+            Launch ExamReplay™
+          </Button>
+          <Link to={`/student/exam-dna?resultId=${result.id}`} style={{ textDecoration: 'none' }}>
+            <Button
+              variant="primary"
+              size="sm"
+              iconLeft={<Brain size={14} />}
+            >
+              View ExamDNA™ Analytics
+            </Button>
+          </Link>
+          <Button
+            variant="secondary"
+            size="sm"
+            iconLeft={<Printer size={14} />}
+            onClick={() => window.print()}
+          >
+            Print Scorecard
+          </Button>
+        </div>
       </div>
 
       {/* Main Score Hero Card */}
@@ -244,6 +273,59 @@ export function StudentResultDetail() {
           </div>
         </CardContent>
       </Card>
+
+      {/* ExamFair & Adaptive Assessment Panels */}
+      <div style={{ display: 'grid', gridTemplateColumns: result.adaptiveReport ? 'repeat(auto-fit, minmax(320px, 1fr))' : '1fr', gap: '1rem', marginBottom: '1.75rem' }}>
+        {/* ExamFair Integrity Shield */}
+        <Card>
+          <CardContent style={{ padding: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <ShieldCheck size={18} color="var(--color-success)" />
+                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                  ExamFair™ Academic Integrity Audit
+                </span>
+              </div>
+              <Badge variant={result.examFairAudit?.status === 'HIGH_RISK_REVIEW' ? 'danger' : result.examFairAudit?.status === 'ADVISORY_FLAGGED' ? 'warning' : 'success'} size="sm">
+                {result.examFairAudit?.integrityScore !== undefined ? `${result.examFairAudit.integrityScore}% Score` : '100% Verified'}
+              </Badge>
+            </div>
+            <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginBottom: '0.75rem' }}>
+              {result.examFairAudit?.summary || 'Assessment session fully verified with zero suspicious telemetry.'}
+            </p>
+            <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+              <span>Tab Switches: <strong style={{ color: '#FFFFFF' }}>{result.examFairAudit?.tabSwitches || 0}</strong></span>
+              <span>Clipboard Events: <strong style={{ color: '#FFFFFF' }}>{result.examFairAudit?.copyPasteAttempts || 0}</strong></span>
+              <span>Audit Status: <strong style={{ color: 'var(--color-success)' }}>{result.examFairAudit?.status || 'CLEAN_VERIFIED'}</strong></span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Adaptive CAT Diagnostics (if applicable) */}
+        {result.adaptiveReport && (
+          <Card>
+            <CardContent style={{ padding: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Activity size={18} color="var(--color-primary)" />
+                  <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                    Adaptive CAT Proficiency
+                  </span>
+                </div>
+                <Badge variant="primary" size="sm">
+                  {result.adaptiveReport.proficiencyTier}
+                </Badge>
+              </div>
+              <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-secondary)', marginBottom: '0.75rem' }}>
+                Dynamic Ability ($\theta$): <strong style={{ color: '#FFFFFF' }}>{result.adaptiveReport.theta > 0 ? `+${result.adaptiveReport.theta}` : result.adaptiveReport.theta}</strong> • Scaled Score: <strong style={{ color: 'var(--color-primary)' }}>{result.adaptiveReport.scaledScore}%</strong>
+              </p>
+              <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
+                Trajectory: {result.adaptiveReport.trajectory.slice(0, 4).join(' → ')}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {/* Itemized Questions Breakdown */}
       <div style={{ marginBottom: '1.5rem' }}>
@@ -368,7 +450,27 @@ export function StudentResultDetail() {
           })}
         </div>
       </div>
-    </div>
+
+      {/* ExamReplay Modal */}
+      <Modal
+        isOpen={showReplayModal}
+        onClose={() => setShowReplayModal(false)}
+        title="ExamReplay™ Attempt Session Reconstruction"
+        description="Chronological step-by-step playback of candidate decision paths, answer modifications, and pacing."
+        size="lg"
+        footer={
+          <Button variant="secondary" size="sm" onClick={() => setShowReplayModal(false)}>
+            Close Replay
+          </Button>
+        }
+      >
+        <ExamReplayViewer
+          timeline={buildReplayTimeline(result)}
+          totalDuration={result.durationTakenSeconds || 0}
+          examTitle={examTitle || examSnapshot?.title}
+        />
+      </Modal>
+    </PageTransition>
   );
 }
 

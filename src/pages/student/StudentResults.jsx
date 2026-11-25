@@ -18,6 +18,8 @@ import {
   TableHead,
   TableCell,
   EmptyState,
+  PageTransition,
+  FloatingBackgroundElements,
 } from '../../components/common';
 import {
   Award,
@@ -140,13 +142,32 @@ export function StudentResults() {
   ];
 
   return (
-    <div>
+    <PageTransition>
       {/* Module Header */}
-      <div className="module-header">
-        <div className="module-title-group">
-          <div className="eyebrow" style={{ marginBottom: '0.375rem' }}>ASSESSMENT ARCHIVE</div>
-          <h1>My Examination Results</h1>
-          <p>Historical evaluation records, verified scorecards and itemized answer breakdowns.</p>
+      <div
+        className="module-header"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          padding: '1.5rem var(--space-6)',
+          backgroundColor: 'var(--color-surface)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--color-border)',
+          marginBottom: '1.5rem',
+        }}
+      >
+        <FloatingBackgroundElements count={3} opacity={0.35} />
+        <div className="module-title-group" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="eyebrow" style={{ marginBottom: '0.375rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <Award size={12} />
+            ASSESSMENT ARCHIVE & SCORECARDS
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--color-text-primary)' }}>
+            My Examination Results
+          </h1>
+          <p style={{ color: 'var(--color-text-secondary)', maxWidth: '640px', fontSize: '0.875rem' }}>
+            Historical evaluation records, verified scorecards and itemized answer breakdowns.
+          </p>
         </div>
       </div>
 
@@ -285,7 +306,7 @@ export function StudentResults() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageTransition>
   );
 }
 

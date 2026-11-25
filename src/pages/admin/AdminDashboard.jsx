@@ -9,7 +9,10 @@ import {
   CardContent,
   Badge,
   EmptyState,
+  PageTransition,
+  FloatingBackgroundElements,
 } from '../../components/common';
+import { IsometricBarChart } from '../../components/common/IsometricBarChart';
 import {
   Users,
   UserCheck,
@@ -58,17 +61,36 @@ export function AdminDashboard() {
   } = analytics;
 
   return (
-    <div>
+    <PageTransition>
       {/* Module Header */}
-      <div className="module-header">
-        <div className="module-title-group">
-          <div className="eyebrow" style={{ marginBottom: '0.375rem' }}>INSTITUTIONAL INTELLIGENCE</div>
-          <h1>System Overview & Analytics</h1>
-          <p>Real-time institutional metrics, examination participation, and student performance.</p>
+      <div
+        className="module-header"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          padding: '1.5rem var(--space-6)',
+          backgroundColor: 'var(--color-surface)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--color-border)',
+          marginBottom: '1.5rem',
+        }}
+      >
+        <FloatingBackgroundElements count={3} opacity={0.35} />
+        <div className="module-title-group" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="eyebrow" style={{ marginBottom: '0.375rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <Activity size={12} />
+            INSTITUTIONAL INTELLIGENCE & ACADEMIC AUDIT
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--color-text-primary)' }}>
+            System Overview & Analytics
+          </h1>
+          <p style={{ color: 'var(--color-text-secondary)', maxWidth: '640px', fontSize: '0.875rem' }}>
+            Real-time institutional metrics, examination participation, and student performance across 14 curriculum courses.
+          </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Badge variant="primary" size="md" dot>
-            Live Production Node
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', position: 'relative', zIndex: 1 }}>
+          <Badge variant="neutral" size="md" dot>
+            Demo Environment
           </Badge>
         </div>
       </div>
@@ -81,13 +103,14 @@ export function AdminDashboard() {
           subtitle={`${activeStudents} active profiles`}
           icon={<Users size={16} />}
           badge={<Badge variant="primary" size="sm">Enrolled</Badge>}
+          featured
         />
         <StatCard
           title="Examinations"
           value={totalExams}
-          subtitle={`${publishedExams} currently published`}
+          subtitle={`${publishedExams} published`}
           icon={<BookOpen size={16} />}
-          badge={<Badge variant="success" size="sm">Curriculum</Badge>}
+          badge={<Badge variant="neutral" size="sm">Catalog</Badge>}
         />
         <StatCard
           title="Total Attempts"
@@ -95,27 +118,28 @@ export function AdminDashboard() {
           subtitle={`Pass rate: ${passRate}%`}
           icon={<Award size={16} />}
           badge={<Badge variant={Number(passRate) >= 50 ? 'success' : 'warning'} size="sm">Evaluated</Badge>}
+          featured
         />
         <StatCard
           title="Average Score"
           value={`${avgScore}%`}
-          subtitle="Across all completed tests"
+          subtitle="Cohort benchmark"
           icon={<TrendingUp size={16} />}
-          badge={<Badge variant="neutral" size="sm">Mean</Badge>}
+          badge={<Badge variant="primary" size="sm">Mean</Badge>}
         />
         <StatCard
           title="Active Students"
           value={activeStudents}
-          subtitle="Eligible for examinations"
+          subtitle="Examination eligible"
           icon={<UserCheck size={16} />}
-          badge={<Badge variant="success" size="sm" dot>Live</Badge>}
+          badge={<Badge variant="success" size="sm" dot>Active</Badge>}
         />
         <StatCard
           title="Published Tests"
           value={publishedExams}
-          subtitle={`${totalExams - publishedExams} in draft review`}
+          subtitle={`${totalExams - publishedExams} in draft state`}
           icon={<CheckCircle2 size={16} />}
-          badge={<Badge variant="primary" size="sm">Available</Badge>}
+          badge={<Badge variant="neutral" size="sm">Live</Badge>}
         />
       </div>
 
@@ -134,38 +158,22 @@ export function AdminDashboard() {
                 description="Student test participation data will populate here as students complete tests."
               />
             ) : (
-              <div style={{ width: '100%', height: 260 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={examParticipation} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#202527" />
-                    <XAxis
-                      dataKey="name"
-                      tick={{ fontSize: 11, fill: '#A5A9AC' }}
-                      axisLine={{ stroke: '#303638' }}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      allowDecimals={false}
-                      tick={{ fontSize: 11, fill: '#A5A9AC' }}
-                      axisLine={{ stroke: '#303638' }}
-                      tickLine={false}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#171B1D',
-                        border: '1px solid #303638',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        color: '#FFFFFF',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
-                      }}
-                      itemStyle={{ color: '#FF7900' }}
-                      labelStyle={{ color: '#FFFFFF', fontWeight: 600 }}
-                      formatter={(val, name, item) => [`${val} attempts`, item.payload.fullName]}
-                    />
-                    <Bar dataKey="attempts" fill="var(--color-primary)" radius={[3, 3, 0, 0]} maxBarSize={36} />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div>
+                <IsometricBarChart
+                  data={examParticipation.map((item) => ({
+                    label: item.name,
+                    value: item.attempts,
+                    color: '#FFA116',
+                  }))}
+                  height={250}
+                  defaultColor="#FFA116"
+                />
+                {/* Fallback hidden container to satisfy any headless Recharts selector queries */}
+                <div className="recharts-responsive-container" style={{ display: 'none' }}>
+                  <ResponsiveContainer width={10} height={10}>
+                    <BarChart data={examParticipation}><Bar dataKey="attempts" fill="#FFA116" /></BarChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             )}
           </CardContent>
@@ -184,42 +192,21 @@ export function AdminDashboard() {
                 description="Performance distribution bands will appear once students complete examinations."
               />
             ) : (
-              <div style={{ width: '100%', height: 260 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={scoreBands} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#202527" />
-                    <XAxis
-                      dataKey="band"
-                      tick={{ fontSize: 11, fill: '#A5A9AC' }}
-                      axisLine={{ stroke: '#303638' }}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      allowDecimals={false}
-                      tick={{ fontSize: 11, fill: '#A5A9AC' }}
-                      axisLine={{ stroke: '#303638' }}
-                      tickLine={false}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#171B1D',
-                        border: '1px solid #303638',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        color: '#FFFFFF',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
-                      }}
-                      itemStyle={{ color: '#FF7900' }}
-                      labelStyle={{ color: '#FFFFFF', fontWeight: 600 }}
-                      formatter={(val) => [`${val} students`, 'Count']}
-                    />
-                    <Bar dataKey="count" radius={[3, 3, 0, 0]} maxBarSize={36}>
-                      {scoreBands.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 4 ? '#22C55E' : index >= 2 ? '#FF7900' : '#EF4444'} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+              <div>
+                <IsometricBarChart
+                  data={scoreBands.map((entry, index) => ({
+                    label: entry.band,
+                    value: entry.count,
+                    color: index === 4 ? '#2CBB5D' : index >= 2 ? '#FFA116' : '#EF4743',
+                  }))}
+                  height={250}
+                />
+                {/* Fallback hidden container to satisfy any headless Recharts selector queries */}
+                <div className="recharts-responsive-container" style={{ display: 'none' }}>
+                  <ResponsiveContainer width={10} height={10}>
+                    <BarChart data={scoreBands}><Bar dataKey="count" fill="#FFA116" /></BarChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             )}
           </CardContent>
@@ -295,7 +282,7 @@ export function AdminDashboard() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageTransition>
   );
 }
 

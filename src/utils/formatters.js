@@ -73,6 +73,8 @@ export const formatTimeRemaining = (seconds) => {
   return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
 };
 
+export const formatTime = formatTimeRemaining;
+
 /**
  * Format percentage.
  * Example: 84.567 -> '84.6%'

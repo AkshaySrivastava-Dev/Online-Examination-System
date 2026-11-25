@@ -5,7 +5,6 @@ import {
   BookOpen,
   LayoutDashboard,
   Users,
-  FileText,
   Layers,
   Award,
   UserCheck,
@@ -14,7 +13,7 @@ import {
   X,
   Shield,
 } from 'lucide-react';
-import { Badge } from '../components/common';
+import { ThemeToggle } from '../components/common/ThemeToggle';
 
 export function AdminLayout() {
   const { currentUser, logout } = useAuth();
@@ -22,15 +21,14 @@ export function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navLinks = [
-    { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-    { to: '/admin/students', label: 'Student Management', icon: <Users size={18} /> },
-    { to: '/admin/examinations', label: 'Examinations', icon: <BookOpen size={18} /> },
-    { to: '/admin/questions', label: 'Question Bank', icon: <Layers size={18} /> },
-    { to: '/admin/results', label: 'Results & Attempts', icon: <Award size={18} /> },
-    { to: '/admin/profile', label: 'Admin Profile', icon: <UserCheck size={18} /> },
+    { to: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
+    { to: '/admin/students', label: 'Student Management', icon: <Users size={16} /> },
+    { to: '/admin/examinations', label: 'Examinations', icon: <BookOpen size={16} /> },
+    { to: '/admin/questions', label: 'Question Bank', icon: <Layers size={16} /> },
+    { to: '/admin/results', label: 'Results & Attempts', icon: <Award size={16} /> },
+    { to: '/admin/profile', label: 'Admin Profile', icon: <UserCheck size={16} /> },
   ];
 
-  // Derive page heading from active route
   const currentNav = navLinks.find((n) => location.pathname.startsWith(n.to)) || {
     label: 'Administration',
   };
@@ -50,24 +48,25 @@ export function AdminLayout() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
             <div
               style={{
-                width: '32px',
-                height: '32px',
+                width: '28px',
+                height: '28px',
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--color-primary)',
-                color: '#fff',
+                color: '#1A1A1A',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                fontWeight: 800,
               }}
             >
-              <BookOpen size={18} />
+              <BookOpen size={16} strokeWidth={2.5} />
             </div>
             <div>
-              <span style={{ fontSize: '1rem', fontWeight: 700, letterSpacing: '-0.02em', display: 'block' }}>
-                ExamPro
+              <span style={{ fontSize: '0.9375rem', fontWeight: 700, letterSpacing: '-0.02em', display: 'block', color: 'var(--color-text-primary)' }}>
+                VERITY
               </span>
-              <span style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Admin Portal
+              <span style={{ fontSize: '0.625rem', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
+                Institutional Oversight
               </span>
             </div>
           </div>
@@ -78,12 +77,12 @@ export function AdminLayout() {
             onClick={() => setMobileOpen(false)}
             aria-label="Close sidebar"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         <nav className="admin-sidebar-nav">
-          <div style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '0.5rem 0.75rem' }}>
+          <div style={{ fontSize: '0.625rem', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '0.5rem 0.75rem' }}>
             Management
           </div>
 
@@ -105,94 +104,88 @@ export function AdminLayout() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
             <div
               style={{
-                width: '32px',
-                height: '32px',
+                width: '30px',
+                height: '30px',
                 borderRadius: 'var(--radius-full)',
                 backgroundColor: 'var(--color-primary-subtle)',
                 color: 'var(--color-primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 600,
-                fontSize: '0.8125rem',
+                fontWeight: 700,
+                fontSize: '0.75rem',
                 flexShrink: 0,
+                border: '1px solid var(--color-primary-border)',
               }}
             >
               {currentUser?.fullName?.charAt(0) || 'A'}
             </div>
             <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.8125rem', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', color: 'var(--color-text-primary)' }}>
                 {currentUser?.fullName}
               </div>
-              <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+              <div style={{ fontSize: '0.625rem', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                 {currentUser?.email}
               </div>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={logout}
-            title="Sign out"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-text-secondary)',
-              cursor: 'pointer',
-              padding: '6px',
-              borderRadius: 'var(--radius-sm)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'color var(--transition-fast)',
-            }}
-          >
-            <LogOut size={16} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <ThemeToggle size="sm" />
+            <button
+              type="button"
+              onClick={logout}
+              title="Sign out"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--color-text-secondary)',
+                cursor: 'pointer',
+                padding: '0.375rem',
+                borderRadius: 'var(--radius-sm)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <LogOut size={15} />
+            </button>
+          </div>
         </div>
       </aside>
 
-      {/* Main Content Shell */}
+      {/* Main Content Area */}
       <div className="admin-main">
-        {/* Sticky Topbar */}
         <header className="admin-topbar">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button
               type="button"
-              className="mobile-menu-btn"
+              className="admin-mobile-toggle"
               onClick={() => setMobileOpen(true)}
               aria-label="Open sidebar menu"
             >
-              <Menu size={20} />
+              <Menu size={18} />
             </button>
-            <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-              {currentNav.label}
-            </span>
+            <div className="topbar-breadcrumb">
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '0.75rem' }}>Administration</span>
+              <span style={{ color: 'var(--color-border)', margin: '0 0.5rem' }}>/</span>
+              <span style={{ color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '0.875rem' }}>{currentNav.label}</span>
+            </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <Badge variant="primary" size="sm" dot>
-              Institution Mode
-            </Badge>
+            <div className="topbar-live-badge" style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: 'var(--color-text-muted)', backgroundColor: 'var(--color-surface-subtle)', border: '1px solid var(--color-border)', padding: '0.25rem 0.625rem', borderRadius: 'var(--radius-sm)' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', display: 'inline-block' }} />
+              Demo Environment
+            </div>
+            <ThemeToggle size="sm" />
           </div>
         </header>
 
-        {/* Dynamic Page Outlet */}
         <main className="admin-body">
           <Outlet />
         </main>
-
-        {/* Academic Demonstration Footer */}
-        <footer style={{ borderTop: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)', padding: '1rem var(--space-6)', textAlign: 'center', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-            <Shield size={14} color="var(--color-primary)" />
-            <span>ExamPro Academic System • Institutional Administration • Client-Side LocalStorage Simulation</span>
-          </div>
-        </footer>
       </div>
     </div>
   );
 }
-
-export default AdminLayout;
-

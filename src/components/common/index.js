@@ -23,3 +23,10 @@ export { StatCard } from './StatCard';
 export { EmptyState } from './EmptyState';
 export { LoadingSpinner } from './LoadingSpinner';
 export { ProtectedRoute } from './ProtectedRoute';
+export {
+  PageTransition,
+  FloatingBackgroundElements,
+  AnimatedCounter,
+  SkeletonLoader,
+} from './Motion';
+

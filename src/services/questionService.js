@@ -12,19 +12,28 @@
 import { getItem, setItem } from './storageService.js';
 import { generateId } from '../utils/idGenerator.js';
 import { getExaminationById, updateExamination } from './examService.js';
+import { addTaxonomyEntry } from './taxonomyService.js';
 
 /**
- * Get all questions (optionally filtered by exam).
+ * Get all questions (optionally filtered by exam, subject, topic, subtopic, difficulty).
  * @param {Object} [filter]
  * @param {string} [filter.examId]
+ * @param {string} [filter.subject]
+ * @param {string} [filter.topic]
+ * @param {string} [filter.subtopic]
+ * @param {string} [filter.difficulty]
  * @param {boolean} [filter.includeDeleted=false]
  * @returns {Array}
  */
-export const getQuestions = ({ examId, includeDeleted = false } = {}) => {
+export const getQuestions = ({ examId, subject, topic, subtopic, difficulty, includeDeleted = false } = {}) => {
   const questions = getItem('questions', []);
   return questions.filter((q) => {
     if (!includeDeleted && q.isDeleted) return false;
     if (examId && q.examId !== examId) return false;
+    if (subject && q.subject !== subject) return false;
+    if (topic && q.topic !== topic) return false;
+    if (subtopic && q.subtopic !== subtopic) return false;
+    if (difficulty && q.difficulty !== difficulty) return false;
     return true;
   });
 };
@@ -87,6 +96,11 @@ export const createQuestion = (data) => {
   const newQuestion = {
     id: generateId('qst'),
     examId: data.examId,
+    subject: data.subject?.trim() || exam.category || 'General',
+    topic: data.topic?.trim() || 'Unclassified',
+    subtopic: data.subtopic?.trim() || 'Unclassified',
+    concept: data.concept?.trim() || 'General Concept',
+    difficulty: ['Easy', 'Medium', 'Hard'].includes(data.difficulty) ? data.difficulty : 'Medium',
     questionText: data.questionText.trim(),
     options: data.options.map((opt) => ({
       id: opt.id,
@@ -113,6 +127,16 @@ export const createQuestion = (data) => {
     (q) => q.examId === data.examId && !q.isDeleted
   );
   updateExamination(data.examId, { questionCount: activeExamQuestions.length });
+
+  // Register in structured taxonomy if classified
+  if (newQuestion.topic && newQuestion.topic !== 'Unclassified') {
+    addTaxonomyEntry({
+      subject: newQuestion.subject,
+      topic: newQuestion.topic,
+      subtopic: newQuestion.subtopic,
+      concept: newQuestion.concept,
+    });
+  }
 
   return { success: true, question: newQuestion };
 };
@@ -164,16 +188,37 @@ export const updateQuestion = (id, updates) => {
     }
   }
 
+  let difficulty = existing.difficulty || 'Medium';
+  if (updates.difficulty !== undefined) {
+    if (['Easy', 'Medium', 'Hard'].includes(updates.difficulty)) {
+      difficulty = updates.difficulty;
+    }
+  }
+
   const updatedQuestion = {
     ...existing,
     ...updates,
     id: existing.id,
     marks,
+    difficulty,
+    subject: updates.subject !== undefined ? updates.subject.trim() : (existing.subject || 'General'),
+    topic: updates.topic !== undefined ? updates.topic.trim() : (existing.topic || 'Unclassified'),
+    subtopic: updates.subtopic !== undefined ? updates.subtopic.trim() : (existing.subtopic || 'Unclassified'),
+    concept: updates.concept !== undefined ? updates.concept.trim() : (existing.concept || 'General Concept'),
     updatedAt: new Date().toISOString(),
   };
 
   questions[index] = updatedQuestion;
   const saved = setItem('questions', questions);
+
+  if (saved && updatedQuestion.topic && updatedQuestion.topic !== 'Unclassified') {
+    addTaxonomyEntry({
+      subject: updatedQuestion.subject,
+      topic: updatedQuestion.topic,
+      subtopic: updatedQuestion.subtopic,
+      concept: updatedQuestion.concept,
+    });
+  }
 
   return { success: saved, question: updatedQuestion };
 };

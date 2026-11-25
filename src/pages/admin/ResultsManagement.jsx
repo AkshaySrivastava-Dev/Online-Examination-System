@@ -14,6 +14,9 @@ import {
   Input,
   Badge,
   Modal,
+  StatCard,
+  PageTransition,
+  FloatingBackgroundElements,
 } from '../../components/common';
 import {
   Award,
@@ -27,8 +30,13 @@ import {
   BookOpen,
   Calendar,
   ShieldCheck,
+  ShieldAlert,
+  Sparkles,
+  Activity,
 } from 'lucide-react';
 import { formatDate, formatDateTime, formatDuration } from '../../utils/formatters.js';
+import { buildReplayTimeline } from '../../services/examReplayService.js';
+import { ExamReplayViewer } from '../../components/exam/ExamReplayViewer.jsx';
 
 export function ResultsManagement() {
   const [results, setResults] = useState([]);
@@ -38,6 +46,7 @@ export function ResultsManagement() {
   const [selectedStatus, setSelectedStatus] = useState('all');
 
   const [activeResult, setActiveResult] = useState(null);
+  const [showReplayModal, setShowReplayModal] = useState(false);
 
   // Load data
   useEffect(() => {
@@ -63,15 +72,100 @@ export function ResultsManagement() {
     setActiveResult(res);
   };
 
+  // Compute real analytics metrics from actual stored results
+  const totalAttempts = results.length;
+  const passedAttempts = results.filter((r) => r.isPassed).length;
+  const passRate = totalAttempts > 0 ? Math.round((passedAttempts / totalAttempts) * 100) : 0;
+  const avgScore =
+    totalAttempts > 0
+      ? Math.round(results.reduce((sum, r) => sum + (Number(r.percentage) || 0), 0) / totalAttempts)
+      : 0;
+  const cleanIntegrityCount = results.filter((r) => !r.examFairAudit || r.examFairAudit.integrityScore >= 90).length;
+  const avgIntegrity =
+    totalAttempts > 0
+      ? Math.round(
+          results.reduce((sum, r) => sum + (r.examFairAudit?.integrityScore ?? 100), 0) / totalAttempts
+        )
+      : 100;
+
   return (
-    <div>
-      {/* Module Header */}
-      <div className="module-header">
-        <div className="module-title-group">
-          <div className="eyebrow" style={{ marginBottom: '0.375rem' }}>EVALUATION LEDGER</div>
-          <h1>Results & Assessment Records</h1>
-          <p>Inspect immutable examination submissions, student responses, and evaluated scorecards.</p>
+    <PageTransition>
+      {/* Module Header with Linear aesthetic and subtle floating accents */}
+      <div
+        className="module-header"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          padding: '1.5rem var(--space-6)',
+          backgroundColor: 'var(--color-surface)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--color-border)',
+          marginBottom: '1.5rem',
+        }}
+      >
+        <FloatingBackgroundElements count={3} opacity={0.35} />
+        <div className="module-title-group" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="eyebrow" style={{ marginBottom: '0.375rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <Award size={12} />
+            EVALUATION LEDGER & ASSESSMENT AUDIT
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--color-text-primary)' }}>
+            Results & Assessment Records
+          </h1>
+          <p style={{ color: 'var(--color-text-secondary)', maxWidth: '640px', fontSize: '0.875rem' }}>
+            Inspect immutable examination submissions, candidate responses, ExamFair academic integrity audits, and itemized scorecards.
+          </p>
         </div>
+      </div>
+
+      {/* KPI Summary Section with Real Data */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '1rem',
+          marginBottom: '1.5rem',
+        }}
+      >
+        <StatCard
+          title="Total Attempts"
+          value={totalAttempts}
+          subtitle="Submitted candidate tests"
+          icon={<BookOpen size={16} />}
+        />
+        <StatCard
+          title="Institutional Pass Rate"
+          value={`${passRate}%`}
+          subtitle={`${passedAttempts} of ${totalAttempts} passed`}
+          badge={
+            <Badge variant={passRate >= 60 ? 'success' : 'warning'} size="xs" dot>
+              {passRate >= 60 ? 'Healthy' : 'Developing'}
+            </Badge>
+          }
+          icon={<Award size={16} />}
+        />
+        <StatCard
+          title="Average Score"
+          value={`${avgScore}%`}
+          subtitle="Overall mean percentage"
+          badge={
+            <Badge variant="neutral" size="xs">
+              Mean
+            </Badge>
+          }
+          icon={<Activity size={16} />}
+        />
+        <StatCard
+          title="ExamFair™ Integrity"
+          value={`${avgIntegrity}%`}
+          subtitle={`${cleanIntegrityCount} sessions verified clean`}
+          badge={
+            <Badge variant="success" size="xs" dot>
+              Audit Verified
+            </Badge>
+          }
+          icon={<ShieldCheck size={16} />}
+        />
       </div>
 
       {/* Filter and Search Bar Card */}
@@ -132,6 +226,7 @@ export function ResultsManagement() {
               <TableHead>Examination Title</TableHead>
               <TableHead>Score</TableHead>
               <TableHead>Percentage</TableHead>
+              <TableHead>ExamFair™</TableHead>
               <TableHead>Outcome</TableHead>
               <TableHead>Submitted On</TableHead>
               <TableHead style={{ textAlign: 'right' }}>Inspection</TableHead>
@@ -139,7 +234,7 @@ export function ResultsManagement() {
           </TableHeader>
           <TableBody>
             {results.length === 0 ? (
-              <TableEmpty colSpan={7} message="No student examination attempts match the specified query." />
+              <TableEmpty colSpan={8} message="No student examination attempts match the specified query." />
             ) : (
               results.map((res) => (
                 <TableRow key={res.id}>
@@ -164,6 +259,15 @@ export function ResultsManagement() {
                   </TableCell>
                   <TableCell style={{ fontWeight: 600 }}>
                     {res.percentage}%
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={res.examFairAudit?.status === 'HIGH_RISK_REVIEW' ? 'danger' : res.examFairAudit?.status === 'ADVISORY_FLAGGED' ? 'warning' : 'success'}
+                      size="sm"
+                      dot
+                    >
+                      {res.examFairAudit?.integrityScore !== undefined ? `${res.examFairAudit.integrityScore}%` : '100% Clean'}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -270,6 +374,64 @@ export function ResultsManagement() {
               </div>
             </div>
 
+            {/* ExamFair Integrity & Adaptive Trajectory Bar */}
+            <div style={{ display: 'grid', gridTemplateColumns: activeResult.adaptiveReport ? 'repeat(auto-fit, minmax(280px, 1fr))' : '1fr', gap: '0.75rem', marginBottom: '1.5rem' }}>
+              <div
+                style={{
+                  padding: '0.875rem 1rem',
+                  backgroundColor: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-md)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: '0.75rem',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <ShieldCheck size={18} color="var(--color-success)" />
+                  <div>
+                    <div style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                      ExamFair™ Integrity: {activeResult.examFairAudit?.integrityScore !== undefined ? `${activeResult.examFairAudit.integrityScore}%` : '100%'}
+                    </div>
+                    <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)' }}>
+                      Tab Switches: {activeResult.examFairAudit?.tabSwitches || 0} • Status: {activeResult.examFairAudit?.status || 'CLEAN_VERIFIED'}
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  iconLeft={<Sparkles size={14} />}
+                  onClick={() => setShowReplayModal(true)}
+                >
+                  ExamReplay™
+                </Button>
+              </div>
+
+              {activeResult.adaptiveReport && (
+                <div
+                  style={{
+                    padding: '0.875rem 1rem',
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                    <Activity size={16} color="var(--color-primary)" />
+                    <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                      Adaptive Proficiency: {activeResult.adaptiveReport.proficiencyTier}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-muted)' }}>
+                    Theta ($\theta$): {activeResult.adaptiveReport.theta > 0 ? `+${activeResult.adaptiveReport.theta}` : activeResult.adaptiveReport.theta} • Scaled Score: {activeResult.adaptiveReport.scaledScore}%
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Answer Breakdown Sheet */}
             <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, marginBottom: '0.75rem' }}>
               Question & Answer Breakdown Sheet ({activeResult.answersBreakdown?.length || 0} items)
@@ -371,7 +533,29 @@ export function ResultsManagement() {
           </div>
         )}
       </Modal>
-    </div>
+
+      {/* ExamReplay Modal */}
+      {activeResult && (
+        <Modal
+          isOpen={showReplayModal}
+          onClose={() => setShowReplayModal(false)}
+          title="ExamReplay™ Candidate Session Audit"
+          description={`Replay decision timeline for ${activeResult.studentSnapshot?.fullName} on ${activeResult.examSnapshot?.title}`}
+          size="lg"
+          footer={
+            <Button variant="secondary" size="sm" onClick={() => setShowReplayModal(false)}>
+              Close Replay
+            </Button>
+          }
+        >
+          <ExamReplayViewer
+            timeline={buildReplayTimeline(activeResult)}
+            totalDuration={activeResult.durationTakenSeconds || 0}
+            examTitle={activeResult.examSnapshot?.title || activeResult.examTitle}
+          />
+        </Modal>
+      )}
+    </PageTransition>
   );
 }
 

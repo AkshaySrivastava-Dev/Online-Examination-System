@@ -10,6 +10,8 @@ import { getItem, setItem, removeItem, persistExamResultIdempotent, acquireTabLo
 import { generateId } from '../utils/idGenerator.js';
 import { getExaminationById } from './examService.js';
 import { getQuestions } from './questionService.js';
+import { createExamFairSnapshot } from './examFairService.js';
+import { calculateAdaptiveProficiency } from './adaptiveAssessmentService.js';
 
 const ATTEMPT_PREFIX = 'active_attempt_';
 
@@ -165,6 +167,16 @@ export const startExamAttempt = (student, examId, tabId) => {
     markedForReview: [], // array of questionIds
     visitedQuestions: rawQuestions.length > 0 ? [rawQuestions[0].id] : [],
     currentQuestionIndex: 0,
+    confidenceLevels: {}, // questionId -> 'low' | 'medium' | 'high'
+    questionTimeSpent: {}, // questionId -> seconds
+    answerHistory: {}, // questionId -> { changesCount: number, originalAnswer: string, finalAnswer: string }
+    examFairTelemetry: {
+      tabSwitches: 0,
+      copyPasteAttempts: 0,
+      rapidAnomalies: 0,
+      events: [],
+    },
+    questionLastEnteredAt: now,
     status: 'in-progress',
     activeTabId: tabId,
     lastHeartbeat: now,
@@ -213,10 +225,74 @@ export const recordAnswer = (studentId, examId, questionId, optionId) => {
   const visited = new Set(attempt.visitedQuestions || []);
   visited.add(questionId);
 
+  // Track answer stability (changes count and original vs final)
+  const history = attempt.answerHistory || {};
+  const prevChoice = attempt.answers?.[questionId] || null;
+  if (!history[questionId]) {
+    history[questionId] = {
+      originalAnswer: optionId,
+      finalAnswer: optionId,
+      changesCount: 0,
+    };
+  } else if (prevChoice !== optionId) {
+    history[questionId].changesCount = (history[questionId].changesCount || 0) + 1;
+    history[questionId].finalAnswer = optionId;
+  }
+
   attempt.answers = updatedAnswers;
   attempt.visitedQuestions = Array.from(visited);
+  attempt.answerHistory = history;
   attempt.lastHeartbeat = Date.now();
 
+  return setItem(key, attempt);
+};
+
+/**
+ * Record optional confidence rating for a question.
+ *
+ * @param {string} studentId
+ * @param {string} examId
+ * @param {string} questionId
+ * @param {'low'|'medium'|'high'|null} level
+ * @returns {boolean} Success status
+ */
+export const recordConfidence = (studentId, examId, questionId, level) => {
+  const key = getAttemptKey(studentId, examId);
+  const attempt = getItem(key, null);
+  if (!attempt || attempt.status === 'submitted') return false;
+
+  const confidences = { ...(attempt.confidenceLevels || {}) };
+  if (level === null) {
+    delete confidences[questionId];
+  } else {
+    confidences[questionId] = level;
+  }
+
+  attempt.confidenceLevels = confidences;
+  attempt.lastHeartbeat = Date.now();
+  return setItem(key, attempt);
+};
+
+/**
+ * Accumulate dwell time spent on a question.
+ *
+ * @param {string} studentId
+ * @param {string} examId
+ * @param {string} questionId
+ * @param {number} seconds - Elapsed seconds on this question
+ * @returns {boolean} Success status
+ */
+export const recordQuestionTime = (studentId, examId, questionId, seconds) => {
+  if (!seconds || seconds <= 0) return false;
+  const key = getAttemptKey(studentId, examId);
+  const attempt = getItem(key, null);
+  if (!attempt || attempt.status === 'submitted') return false;
+
+  const timeMap = { ...(attempt.questionTimeSpent || {}) };
+  timeMap[questionId] = (timeMap[questionId] || 0) + Math.round(seconds);
+
+  attempt.questionTimeSpent = timeMap;
+  attempt.lastHeartbeat = Date.now();
   return setItem(key, attempt);
 };
 
@@ -294,6 +370,46 @@ export const getQuestionState = (attempt, questionId) => {
   if (isAnswered) return 'answered';
   if (isVisited) return 'not-answered';
   return 'not-visited';
+};
+
+/**
+ * Record an ExamFair integrity telemetry event (tab switch, copy attempt, rapid submit).
+ *
+ * @param {string} studentId
+ * @param {string} examId
+ * @param {{ type: string, description: string }} event
+ */
+export const recordExamFairViolation = (studentId, examId, { type = 'TAB_SWITCH', description = '' } = {}) => {
+  const key = getAttemptKey(studentId, examId);
+  const attempt = getItem(key, null);
+  if (!attempt || attempt.status === 'submitted') return false;
+
+  const telemetry = attempt.examFairTelemetry || {
+    tabSwitches: 0,
+    copyPasteAttempts: 0,
+    rapidAnomalies: 0,
+    events: [],
+  };
+
+  if (type === 'TAB_SWITCH') {
+    telemetry.tabSwitches = (telemetry.tabSwitches || 0) + 1;
+  } else if (type === 'COPY_ATTEMPT' || type === 'PASTE_ATTEMPT') {
+    telemetry.copyPasteAttempts = (telemetry.copyPasteAttempts || 0) + 1;
+  } else if (type === 'RAPID_SUBMIT') {
+    telemetry.rapidAnomalies = (telemetry.rapidAnomalies || 0) + 1;
+  }
+
+  telemetry.events = telemetry.events || [];
+  telemetry.events.push({
+    id: generateId('evt'),
+    type,
+    description: description || `Telemetry logged: ${type}`,
+    timestamp: new Date().toISOString(),
+  });
+
+  attempt.examFairTelemetry = telemetry;
+  attempt.lastHeartbeat = Date.now();
+  return setItem(key, attempt);
 };
 
 /**
@@ -376,6 +492,17 @@ export const submitExamAttempt = (studentId, examId, submissionType = 'manual') 
       marksAwarded: awarded,
       maxMarks: qMarks,
       explanation: q.explanation || '',
+      // Academic Taxonomy Snapshot
+      subject: q.subject || exam.category || 'General',
+      topic: q.topic || q.category || exam.category || 'Core Principles',
+      subtopic: q.subtopic || 'Unclassified',
+      concept: q.concept || 'General Concept',
+      difficulty: q.difficulty || 'Medium',
+      // Additive ExamDNA metrics (preserves backward compatibility when absent)
+      confidence: attempt.confidenceLevels?.[q.id] || null,
+      timeSpentSeconds: attempt.questionTimeSpent?.[q.id] !== undefined ? attempt.questionTimeSpent[q.id] : null,
+      changesCount: attempt.answerHistory?.[q.id]?.changesCount || 0,
+      originalAnswer: attempt.answerHistory?.[q.id]?.originalAnswer || studentChoice,
     };
   });
 
@@ -415,6 +542,10 @@ export const submitExamAttempt = (studentId, examId, submissionType = 'manual') 
     durationTakenSeconds: Math.max(1, Math.round((Date.now() - attempt.startTimestamp) / 1000)),
     submissionType,
     answersBreakdown,
+    // ExamFair Assessment Integrity Audit
+    examFairAudit: createExamFairSnapshot(attempt.examFairTelemetry || {}),
+    // Computerized Adaptive Assessment Trajectory (if applicable)
+    adaptiveReport: exam.isAdaptive ? calculateAdaptiveProficiency(answersBreakdown) : null,
   };
 
   // Idempotently commit result first, then remove attempt

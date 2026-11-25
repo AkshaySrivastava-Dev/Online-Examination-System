@@ -23,6 +23,8 @@ import {
   Input,
   Badge,
   Modal,
+  PageTransition,
+  FloatingBackgroundElements,
 } from '../../components/common';
 import {
   BookOpen,
@@ -38,6 +40,8 @@ import {
   Layers,
   Calendar,
   Clock,
+  Sparkles,
+  Zap,
 } from 'lucide-react';
 import { formatDate, formatDateTime, formatDuration } from '../../utils/formatters.js';
 
@@ -228,26 +232,53 @@ export function ExaminationManagement() {
   };
 
   return (
-    <div>
-      {/* Module Header */}
-      <div className="module-header">
-        <div className="module-title-group">
-          <div className="eyebrow" style={{ marginBottom: '0.375rem' }}>CURRICULUM ORCHESTRATION</div>
-          <h1>Examinations Registry</h1>
-          <p>Create, configure parameters, validate question points, and publish examinations.</p>
+    <PageTransition>
+      {/* Module Header with Linear aesthetic and subtle floating accents */}
+      <div
+        className="module-header"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          padding: '1.5rem var(--space-6)',
+          backgroundColor: 'var(--color-surface)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--color-border)',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
+        <FloatingBackgroundElements count={3} opacity={0.35} />
+        <div className="module-title-group" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="eyebrow" style={{ marginBottom: '0.375rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <BookOpen size={12} />
+            CURRICULUM ORCHESTRATION & ASSESSMENT REGISTRY
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.025em', color: 'var(--color-text-primary)' }}>
+            Examinations Registry
+          </h1>
+          <p style={{ color: 'var(--color-text-secondary)', maxWidth: '640px', fontSize: '0.875rem' }}>
+            Create, configure scoring parameters, validate item point distributions, and orchestrate assessment publication across all 14 curriculum courses.
+          </p>
         </div>
 
-        <Button
-          variant="primary"
-          size="md"
-          iconLeft={<Plus size={16} />}
-          onClick={() => {
-            setFormErrors({});
-            setCreateModalOpen(true);
-          }}
-        >
-          Create Examination
-        </Button>
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <Button
+            variant="primary"
+            size="md"
+            iconLeft={<Plus size={16} />}
+            onClick={() => {
+              setFormErrors({});
+              setCreateModalOpen(true);
+            }}
+            style={{ boxShadow: 'var(--shadow-sm)' }}
+          >
+            Create Examination
+          </Button>
+        </div>
       </div>
 
       {/* Filter and Search Bar Card */}
@@ -267,11 +298,11 @@ export function ExaminationManagement() {
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Status:</span>
               <select
                 className="form-input"
-                style={{ width: '130px', height: '38px', padding: '0 0.5rem' }}
+                style={{ width: '140px', height: '38px', padding: '0 0.5rem', fontWeight: 500 }}
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
-                <option value="all">All Tests</option>
+                <option value="all">All Tests ({exams.length})</option>
                 <option value="published">Published</option>
                 <option value="draft">Drafts Only</option>
               </select>
@@ -288,82 +319,111 @@ export function ExaminationManagement() {
           <TableHeader>
             <TableRow>
               <TableHead>Title & Curriculum</TableHead>
-              <TableHead>Duration</TableHead>
-              <TableHead>Total Marks</TableHead>
-              <TableHead>Passing %</TableHead>
-              <TableHead>Scheduling Window</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead style={{ textAlign: 'right' }}>Actions</TableHead>
+              <TableHead style={{ width: '120px' }}>Duration</TableHead>
+              <TableHead style={{ width: '110px' }}>Total Marks</TableHead>
+              <TableHead style={{ width: '100px' }}>Passing %</TableHead>
+              <TableHead style={{ width: '160px' }}>Scheduling Window</TableHead>
+              <TableHead style={{ width: '120px' }}>Status</TableHead>
+              <TableHead style={{ textAlign: 'right', width: '150px' }}>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredExams.length === 0 ? (
               <TableEmpty colSpan={7} message="No examinations match the specified criteria." />
             ) : (
-              filteredExams.map((exam) => (
-                <TableRow key={exam.id}>
-                  <TableCell>
-                    <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                      {exam.title}
-                    </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', display: 'flex', gap: '0.5rem', marginTop: '2px' }}>
-                      <Badge variant="neutral" size="sm">{exam.category || 'General'}</Badge>
-                      <span>•</span>
-                      <span>{exam.questionCount || 0} questions</span>
-                      <span>•</span>
-                      <span>Retake: {exam.allowRetake ? 'Allowed' : 'Locked'}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{formatDuration(exam.durationMinutes)}</TableCell>
-                  <TableCell style={{ fontWeight: 600 }}>{exam.totalMarks} pts</TableCell>
-                  <TableCell>{exam.passingPercentage}%</TableCell>
-                  <TableCell>
-                    <div style={{ fontSize: '0.75rem' }}>
-                      <div>{formatDate(exam.startDateTime)}</div>
-                      <div style={{ color: 'var(--color-text-muted)' }}>to {formatDate(exam.endDateTime)}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={exam.status === 'published' ? 'success' : 'neutral'}
-                      size="sm"
-                      dot
-                    >
-                      {exam.status === 'published' ? 'Published' : 'Draft'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                      {/* Manage Questions Link */}
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-sm"
-                        onClick={() => navigate(`/admin/questions?examId=${exam.id}`)}
-                        title="Manage Questions in Question Bank"
-                      >
-                        <Layers size={15} color="var(--color-primary)" />
-                      </button>
+              filteredExams.map((exam) => {
+                const isUpcoming = exam.status === 'published' && new Date(exam.startDateTime) > new Date();
 
-                      {/* Publish / Unpublish Toggle */}
-                      {exam.status === 'published' ? (
-                        <button
-                          type="button"
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => handleUnpublish(exam.id)}
-                          title="Unpublish to Draft"
-                        >
-                          <DownloadCloud size={15} color="var(--color-warning)" />
-                        </button>
+                return (
+                  <TableRow key={exam.id} style={{ transition: 'background-color var(--transition-fast)' }}>
+                    <TableCell>
+                      <div style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '0.9375rem', marginBottom: '0.25rem' }}>
+                        {exam.title}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
+                        <Badge variant="neutral" size="sm">{exam.category || 'General'}</Badge>
+                        {exam.isAdaptive && (
+                          <Badge variant="primary" size="sm" dot>
+                            CAT Adaptive
+                          </Badge>
+                        )}
+                        <span style={{ color: 'var(--color-border)' }}>•</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>{exam.questionCount || 0} questions</span>
+                        <span style={{ color: 'var(--color-border)' }}>•</span>
+                        <span>Retake: {exam.allowRetake ? 'Allowed' : 'Locked'}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8125rem' }}>
+                        <Clock size={13} color="var(--color-text-muted)" />
+                        {formatDuration(exam.durationMinutes)}
+                      </span>
+                    </TableCell>
+                    <TableCell style={{ fontWeight: 600, fontFamily: 'var(--font-mono)', fontSize: '0.875rem', color: 'var(--color-text-primary)' }}>
+                      {exam.totalMarks} pts
+                    </TableCell>
+                    <TableCell style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8125rem' }}>
+                      {exam.passingPercentage}%
+                    </TableCell>
+                    <TableCell>
+                      <div style={{ fontSize: '0.75rem' }}>
+                        <div style={{ color: 'var(--color-text-primary)', fontWeight: 500 }}>{formatDate(exam.startDateTime)}</div>
+                        <div style={{ color: 'var(--color-text-muted)' }}>to {formatDate(exam.endDateTime)}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {isUpcoming ? (
+                        <Badge variant="primary" size="sm" dot>
+                          Upcoming
+                        </Badge>
                       ) : (
+                        <Badge
+                          variant={exam.status === 'published' ? 'success' : 'neutral'}
+                          size="sm"
+                          dot
+                        >
+                          {exam.status === 'published' ? 'Published' : 'Draft'}
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                        {/* Manage Questions Link */}
                         <button
                           type="button"
                           className="btn btn-ghost btn-sm"
-                          onClick={() => handlePublish(exam.id)}
-                          title="Verify & Publish Examination"
+                          onClick={() => navigate(`/admin/questions?examId=${exam.id}`)}
+                          title="Manage Questions in Question Bank"
+                          aria-label="Manage Questions"
+                          style={{ padding: '0.375rem' }}
                         >
-                          <UploadCloud size={15} color="var(--color-success)" />
+                          <Layers size={15} color="var(--color-primary)" />
                         </button>
-                      )}
+
+                        {/* Publish / Unpublish Toggle */}
+                        {exam.status === 'published' ? (
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => handleUnpublish(exam.id)}
+                            title="Unpublish to Draft"
+                            aria-label="Unpublish"
+                            style={{ padding: '0.375rem' }}
+                          >
+                            <DownloadCloud size={15} color="var(--color-warning)" />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-sm"
+                            onClick={() => handlePublish(exam.id)}
+                            title="Verify & Publish Examination"
+                            aria-label="Publish"
+                            style={{ padding: '0.375rem' }}
+                          >
+                            <UploadCloud size={15} color="var(--color-success)" />
+                          </button>
+                        )}
 
                       {/* Edit */}
                       <button
@@ -387,9 +447,10 @@ export function ExaminationManagement() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
+              );
+            })
+          )}
+        </TableBody>
         </Table>
       </Card>
 
@@ -717,7 +778,7 @@ export function ExaminationManagement() {
           </div>
         </div>
       </Modal>
-    </div>
+    </PageTransition>
   );
 }
 

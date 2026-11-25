@@ -1,83 +1,194 @@
 /* ==========================================================================
-   ExamPro Design System Tokens — Phenomenon Studio Aesthetic
-   Dark Editorial Architecture • High Contrast • Vibrant Orange Accent
+   VERITY Final Design System Tokens — LeetCode & Linear Product Aesthetic
+   Primary Accent: Vibrant Professional Orange (#FFA116 / #FF8A00)
+   Default: Dark Theme (#1A1A1A, #282828, #333333, #3E3E3E, #EFF1F6, #9A9DA6)
+   Light Theme: (#F7F8FA, #FFFFFF, #E4E6EB, #262626, #737780, #FF8A00)
    ========================================================================== */
-:root {
-  /* Core Surface Architecture */
-  --color-bg: #090C0E;             /* Deep Black canvas */
-  --color-surface: #171B1D;        /* Secondary Dark Charcoal surface */
-  --color-surface-hover: #1F2427;  /* Hover card surface */
-  --color-surface-elevated: #202527;/* Raised surface / modals / dropdowns */
-  --color-surface-subtle: #121517; /* Inset container / field background */
 
-  /* High Contrast Editorial Typography */
-  --color-text-primary: #FFFFFF;    /* Crisp White primary headings & text */
-  --color-text-secondary: #A5A9AC;  /* Muted cool gray supporting text */
-  --color-text-muted: #6B7280;      /* Dimmed labels, subtle metadata */
-  --color-text-inverse: #090C0E;    /* Dark inverse text on bright surfaces */
+:root,
+[data-theme='dark'] {
+  /* Dark Theme Core Surfaces */
+  --color-bg: #1A1A1A;
+  --color-surface: #282828;
+  --color-surface-hover: #333333;
+  --color-surface-elevated: #2E2E2E;
+  --color-surface-subtle: #222222;
+  --color-surface-inset: #1E1E1E;
 
-  /* Thin Architectural Borders */
-  --color-border: #303638;          /* 1px subtle structural border */
-  --color-border-subtle: #202527;   /* Ultra-fine interior divider */
-  --color-border-hover: #4B5255;    /* Interactive border state */
-  --color-border-focus: #FF7900;    /* Focus border — Phenomenon Orange */
+  /* Typography */
+  --color-text-primary: #EFF1F6;
+  --color-text-secondary: #9A9DA6;
+  --color-text-muted: #737780;
+  --color-text-inverse: #1A1A1A;
 
-  /* Phenomenon Studio Vibrant Orange Accent */
-  --color-primary: #FF7900;
-  --color-primary-hover: #E66D00;
-  --color-primary-active: #CC6100;
-  --color-primary-subtle: rgba(255, 121, 0, 0.12);
-  --color-primary-glow: rgba(255, 121, 0, 0.25);
-  --color-primary-text: #FF7900;
+  /* Borders */
+  --color-border: #3E3E3E;
+  --color-border-subtle: #2E2E2E;
+  --color-border-hover: #525252;
+  --color-border-focus: #FFA116;
 
-  /* Strategic High-Contrast Light Surface */
-  --color-light-bg: #F4F4F2;
-  --color-light-text: #090C0E;
-  --color-light-border: #D8D8D5;
+  /* Primary Brand Accent — LeetCode Orange */
+  --color-primary: #FFA116;
+  --color-primary-hover: #FFB338;
+  --color-primary-active: #E08905;
+  --color-primary-subtle: rgba(255, 161, 22, 0.12);
+  --color-primary-border: rgba(255, 161, 22, 0.35);
+  --color-primary-text: #FFA116;
+  --color-primary-glow: rgba(255, 161, 22, 0.2);
 
-  /* Functional Status Colors */
-  --color-success: #22C55E;
-  --color-success-hover: #16A34A;
-  --color-success-subtle: rgba(34, 197, 94, 0.12);
-  --color-success-text: #4ADE80;
+  /* Semantic Status Colors */
+  --color-success: #2CBB5D;
+  --color-success-hover: #26A552;
+  --color-success-subtle: rgba(44, 187, 93, 0.12);
+  --color-success-text: #2CBB5D;
 
-  --color-warning: #F59E0B;
-  --color-warning-hover: #D97706;
-  --color-warning-subtle: rgba(245, 158, 11, 0.12);
-  --color-warning-text: #FBBF24;
+  --color-warning: #FFC01E;
+  --color-warning-hover: #E6AA14;
+  --color-warning-subtle: rgba(255, 192, 30, 0.12);
+  --color-warning-text: #FFC01E;
 
-  --color-danger: #EF4444;
-  --color-danger-hover: #DC2626;
-  --color-danger-subtle: rgba(239, 68, 68, 0.12);
-  --color-danger-text: #F87171;
+  --color-danger: #EF4743;
+  --color-danger-hover: #D93834;
+  --color-danger-subtle: rgba(239, 71, 67, 0.12);
+  --color-danger-text: #EF4743;
 
-  --color-info: #0EA5E9;
-  --color-info-subtle: rgba(14, 165, 233, 0.12);
-  --color-info-text: #38BDF8;
+  --color-info: #FFA116;
+  --color-info-subtle: rgba(255, 161, 22, 0.12);
+  --color-info-text: #FFA116;
 
-  /* Exam Question State Palette (High-Contrast & Legible) */
-  --state-not-visited-bg: #121517;
-  --state-not-visited-border: #303638;
-  --state-not-visited-text: #A5A9AC;
+  /* LeetCode Difficulty Semantic Colors */
+  --color-difficulty-easy: #00B8A3;
+  --color-difficulty-easy-bg: rgba(0, 184, 163, 0.12);
+  --color-difficulty-medium: #FFC01E;
+  --color-difficulty-medium-bg: rgba(255, 192, 30, 0.12);
+  --color-difficulty-hard: #EF4743;
+  --color-difficulty-hard-bg: rgba(239, 71, 67, 0.12);
 
-  --state-not-answered-bg: rgba(239, 68, 68, 0.14);
-  --state-not-answered-border: #EF4444;
-  --state-not-answered-text: #FCA5A5;
+  /* Examination Question Navigator States */
+  --state-not-visited-bg: #222222;
+  --state-not-visited-border: #3E3E3E;
+  --state-not-visited-text: #9A9DA6;
 
-  --state-answered-bg: rgba(34, 197, 94, 0.14);
-  --state-answered-border: #22C55E;
-  --state-answered-text: #86EFAC;
+  --state-not-answered-bg: rgba(239, 71, 67, 0.12);
+  --state-not-answered-border: #EF4743;
+  --state-not-answered-text: #EF4743;
 
-  --state-review-bg: rgba(245, 158, 11, 0.14);
-  --state-review-border: #F59E0B;
-  --state-review-text: #FDE68A;
+  --state-answered-bg: rgba(255, 161, 22, 0.16);
+  --state-answered-border: #FFA116;
+  --state-answered-text: #FFA116;
+
+  --state-review-bg: rgba(255, 192, 30, 0.12);
+  --state-review-border: #FFC01E;
+  --state-review-text: #FFC01E;
 
   --state-ans-review-bg: rgba(168, 85, 247, 0.14);
   --state-ans-review-border: #A855F7;
-  --state-ans-review-text: #D8B4FE;
+  --state-ans-review-text: #C084FC;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.45);
+  --shadow-focus: 0 0 0 2px rgba(255, 161, 22, 0.4);
+  --shadow-focus-danger: 0 0 0 2px rgba(239, 71, 67, 0.4);
+}
+
+[data-theme='light'] {
+  /* Light Theme Core Surfaces */
+  --color-bg: #F7F8FA;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F0F2F5;
+  --color-surface-elevated: #FFFFFF;
+  --color-surface-subtle: #F2F3F5;
+  --color-surface-inset: #ECEEF1;
 
   /* Typography */
+  --color-text-primary: #262626;
+  --color-text-secondary: #737780;
+  --color-text-muted: #8A8F99;
+  --color-text-inverse: #FFFFFF;
+
+  /* Borders */
+  --color-border: #E4E6EB;
+  --color-border-subtle: #EDEFF2;
+  --color-border-hover: #D0D3DA;
+  --color-border-focus: #FF8A00;
+
+  /* Primary Brand Accent — Vibrant Light Theme Orange */
+  --color-primary: #FF8A00;
+  --color-primary-hover: #E67A00;
+  --color-primary-active: #CC6C00;
+  --color-primary-subtle: rgba(255, 138, 0, 0.1);
+  --color-primary-border: rgba(255, 138, 0, 0.35);
+  --color-primary-text: #FF8A00;
+  --color-primary-glow: rgba(255, 138, 0, 0.2);
+
+  /* Semantic Status Colors */
+  --color-success: #2CBB5D;
+  --color-success-hover: #249A4C;
+  --color-success-subtle: rgba(44, 187, 93, 0.1);
+  --color-success-text: #249A4C;
+
+  --color-warning: #D99B00;
+  --color-warning-hover: #B88300;
+  --color-warning-subtle: rgba(217, 155, 0, 0.1);
+  --color-warning-text: #B88300;
+
+  --color-danger: #EF4743;
+  --color-danger-hover: #D93834;
+  --color-danger-subtle: rgba(239, 71, 67, 0.1);
+  --color-danger-text: #D93834;
+
+  --color-info: #FF8A00;
+  --color-info-subtle: rgba(255, 138, 0, 0.1);
+  --color-info-text: #FF8A00;
+
+  /* LeetCode Difficulty Semantic Colors (Light Theme Readable) */
+  --color-difficulty-easy: #009688;
+  --color-difficulty-easy-bg: rgba(0, 150, 136, 0.1);
+  --color-difficulty-medium: #D99B00;
+  --color-difficulty-medium-bg: rgba(217, 155, 0, 0.1);
+  --color-difficulty-hard: #E53935;
+  --color-difficulty-hard-bg: rgba(229, 57, 53, 0.1);
+
+  /* Examination Question Navigator States */
+  --state-not-visited-bg: #F2F3F5;
+  --state-not-visited-border: #E4E6EB;
+  --state-not-visited-text: #737780;
+
+  --state-not-answered-bg: rgba(239, 71, 67, 0.08);
+  --state-not-answered-border: #EF4743;
+  --state-not-answered-text: #D93834;
+
+  --state-answered-bg: rgba(255, 138, 0, 0.12);
+  --state-answered-border: #FF8A00;
+  --state-answered-text: #E67A00;
+
+  --state-review-bg: rgba(217, 155, 0, 0.1);
+  --state-review-border: #D99B00;
+  --state-review-text: #B88300;
+
+  --state-ans-review-bg: rgba(147, 51, 234, 0.1);
+  --state-ans-review-border: #9333EA;
+  --state-ans-review-text: #7E22CE;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.12);
+  --shadow-focus: 0 0 0 2px rgba(255, 138, 0, 0.35);
+  --shadow-focus-danger: 0 0 0 2px rgba(239, 71, 67, 0.35);
+}
+
+/* ==========================================================================
+   SHARED TYPOGRAPHY, SPACING & SYSTEM METRICS
+   ========================================================================== */
+:root {
+  /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --font-size-xs: 0.75rem;     /* 12px */
@@ -86,21 +197,19 @@
   --font-size-lg: 1.125rem;    /* 18px */
   --font-size-xl: 1.25rem;     /* 20px */
   --font-size-2xl: 1.5rem;     /* 24px */
-  --font-size-3xl: 2rem;       /* 32px */
-  --font-size-4xl: 2.75rem;    /* 44px */
-  --font-size-5xl: 3.5rem;     /* 56px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --font-weight-black: 900;
 
-  --line-height-tight: 1.15;
+  --line-height-tight: 1.2;
   --line-height-normal: 1.5;
-  --line-height-relaxed: 1.65;
+  --line-height-relaxed: 1.6;
 
-  /* Spacing Scale */
+  /* Spacing Scale (8-Point Consistent System) */
   --space-1: 0.25rem;  /* 4px */
   --space-2: 0.5rem;   /* 8px */
   --space-3: 0.75rem;  /* 12px */
@@ -110,32 +219,25 @@
   --space-8: 2rem;     /* 32px */
   --space-10: 2.5rem;  /* 40px */
   --space-12: 3rem;    /* 48px */
-  --space-16: 4rem;    /* 64px */
 
-  /* Border Radii (Restrained & Architectural) */
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
+  /* Border Radii (Clean 8px standard) */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
   --radius-lg: 8px;
-  --radius-xl: 12px;
   --radius-full: 9999px;
 
-  /* Shadows (Minimal, thin borders favored over heavy drop-shadows) */
-  --shadow-xs: none;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7);
-  --shadow-focus: 0 0 0 2px rgba(255, 121, 0, 0.35);
-  --shadow-focus-danger: 0 0 0 2px rgba(239, 68, 68, 0.35);
-
   /* Transitions */
-  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal: 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 120ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 180ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Z-Index Hierarchy */
   --z-dropdown: 1000;
-  --z-sticky: 1100;
-  --z-modal-backdrop: 1200;
-  --z-modal: 1300;
-  --z-toast: 1400;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
 }

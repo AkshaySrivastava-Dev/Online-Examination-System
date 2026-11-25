@@ -35,7 +35,7 @@ export function AuthLayout() {
         className="auth-hero-pane"
         style={{
           flex: '1.15',
-          backgroundColor: '#090C0E',
+          backgroundColor: 'var(--color-surface)',
           borderRight: '1px solid var(--color-border)',
           padding: 'var(--space-12) var(--space-10)',
           display: 'flex',
@@ -50,8 +50,8 @@ export function AuthLayout() {
           style={{
             position: 'absolute',
             inset: 0,
-            backgroundImage: 'radial-gradient(rgba(255, 121, 0, 0.04) 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
+            backgroundImage: 'radial-gradient(rgba(255, 161, 22, 0.05) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
             pointerEvents: 'none',
           }}
           aria-hidden="true"
@@ -62,25 +62,25 @@ export function AuthLayout() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
             <div
               style={{
-                width: '40px',
-                height: '40px',
+                width: '36px',
+                height: '36px',
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--color-primary)',
-                color: '#090C0E',
+                color: '#1A1A1A',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 0 20px rgba(255, 121, 0, 0.35)',
+                boxShadow: 'var(--shadow-xs)',
               }}
             >
-              <BookOpen size={22} strokeWidth={2.5} />
+              <BookOpen size={20} strokeWidth={2.5} />
             </div>
             <div>
-              <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.03em', color: '#FFFFFF', display: 'block' }}>
-                ExamPro
+              <span style={{ fontSize: '1.125rem', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--color-text-primary)', display: 'block' }}>
+                VERITY
               </span>
-              <span style={{ fontSize: '0.6875rem', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.14em', fontWeight: 700 }}>
-                Enterprise Assessment
+              <span style={{ fontSize: '0.6875rem', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700 }}>
+                Beyond the Score
               </span>
             </div>
           </div>

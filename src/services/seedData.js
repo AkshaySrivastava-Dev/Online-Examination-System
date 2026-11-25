@@ -9,6 +9,12 @@
 
 import { getItem, setItem } from './storageService.js';
 import { mockTransformPassword } from '../utils/idGenerator.js';
+import {
+  EXPANDED_STUDENTS,
+  EXPANDED_EXAMINATIONS,
+  EXPANDED_QUESTIONS,
+  EXPANDED_RESULTS,
+} from './expandedSeedData.js';
 
 // Predefined Admin Credentials
 export const PREDEFINED_ADMIN = {
@@ -73,6 +79,7 @@ export const SEED_STUDENTS = [
     createdAt: '2026-10-13T14:20:00.000Z',
     updatedAt: '2026-10-13T14:20:00.000Z',
   },
+  ...EXPANDED_STUDENTS,
 ];
 
 // Realistic Seed Examinations
@@ -105,6 +112,7 @@ export const SEED_EXAMINATIONS = [
     endDateTime: '2026-11-30T23:59:59.000Z',
     status: 'published',
     allowRetake: false,
+    isAdaptive: true,
     questionCount: 5,
     createdAt: '2026-10-22T14:00:00.000Z',
     updatedAt: '2026-10-22T14:00:00.000Z',
@@ -149,14 +157,15 @@ export const SEED_EXAMINATIONS = [
     durationMinutes: 45,
     totalMarks: 50,
     passingPercentage: 50,
-    startDateTime: '2026-11-20T00:00:00.000Z',
-    endDateTime: '2026-11-30T23:59:59.000Z',
+    startDateTime: '2026-12-05T00:00:00.000Z',
+    endDateTime: '2026-12-31T23:59:59.000Z',
     status: 'published',
     allowRetake: false,
     questionCount: 5,
     createdAt: '2026-10-28T10:00:00.000Z',
     updatedAt: '2026-10-28T10:00:00.000Z',
   },
+  ...EXPANDED_EXAMINATIONS,
 ];
 
 // Detailed MCQ Questions with exact marks, explanations, and 4 options
@@ -165,6 +174,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_web_001',
     examId: 'exam_cs_101',
+    subject: 'Computer Science',
+    topic: 'Web Architecture',
+    subtopic: 'React Internals',
+    concept: 'Virtual DOM Reconciliation',
+    difficulty: 'Medium',
     questionText: 'What is the primary architectural purpose of the React Virtual DOM (VDOM)?',
     options: [
       { id: 'A', text: 'To replace the browser HTML rendering engine entirely with WebGL.' },
@@ -180,6 +194,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_web_002',
     examId: 'exam_cs_101',
+    subject: 'Computer Science',
+    topic: 'Web Security & Protocols',
+    subtopic: 'Cross-Origin Resource Sharing',
+    concept: 'Access-Control Headers',
+    difficulty: 'Easy',
     questionText: 'Which HTTP header is strictly necessary for a server to permit cross-origin asynchronous requests from a frontend domain?',
     options: [
       { id: 'A', text: 'Access-Control-Allow-Origin' },
@@ -195,6 +214,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_web_003',
     examId: 'exam_cs_101',
+    subject: 'Computer Science',
+    topic: 'Web Architecture',
+    subtopic: 'CSS Layouts',
+    concept: 'Grid vs Flexbox Dimensions',
+    difficulty: 'Easy',
     questionText: 'In modern CSS Layout, what is the key difference between CSS Flexbox and CSS Grid?',
     options: [
       { id: 'A', text: 'Flexbox works only in Safari, while Grid is exclusive to Chromium browsers.' },
@@ -210,6 +234,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_web_004',
     examId: 'exam_cs_101',
+    subject: 'Computer Science',
+    topic: 'JavaScript Runtime',
+    subtopic: 'Asynchronous Execution',
+    concept: 'Event Loop Microtask Priority',
+    difficulty: 'Hard',
     questionText: 'In the JavaScript event loop, which queue has highest execution priority upon completion of the current synchronous call stack?',
     options: [
       { id: 'A', text: 'Macro-task queue (setTimeout, setInterval)' },
@@ -225,6 +254,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_web_005',
     examId: 'exam_cs_101',
+    subject: 'Computer Science',
+    topic: 'Web Security & Protocols',
+    subtopic: 'RESTful APIs',
+    concept: 'Rate Limiting Status Codes',
+    difficulty: 'Easy',
     questionText: 'What does the HTTP status code 429 indicate in a RESTful API exchange?',
     options: [
       { id: 'A', text: 'The requested resource was permanently moved to a new URI.' },
@@ -242,6 +276,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_dsa_001',
     examId: 'exam_cs_102',
+    subject: 'Computer Science',
+    topic: 'Data Structures',
+    subtopic: 'Balanced Search Trees',
+    concept: 'Red-Black Tree Search Complexity',
+    difficulty: 'Hard',
     questionText: 'What is the average-case and worst-case time complexity of searching for an element in a balanced Red-Black Tree with N nodes?',
     options: [
       { id: 'A', text: 'Average: O(1), Worst: O(N)' },
@@ -257,6 +296,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_dsa_002',
     examId: 'exam_cs_102',
+    subject: 'Computer Science',
+    topic: 'Algorithms',
+    subtopic: 'Graph Traversal',
+    concept: 'Breadth-First Shortest Path',
+    difficulty: 'Medium',
     questionText: 'Which graph traversal algorithm is optimal for finding the shortest path in an unweighted graph?',
     options: [
       { id: 'A', text: 'Depth-First Search (DFS)' },
@@ -272,6 +316,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_dsa_003',
     examId: 'exam_cs_102',
+    subject: 'Computer Science',
+    topic: 'Data Structures',
+    subtopic: 'Hashing',
+    concept: 'Open Addressing Collision Resolution',
+    difficulty: 'Medium',
     questionText: 'What is the primary technique used to resolve collisions in an open-addressing Hash Table?',
     options: [
       { id: 'A', text: 'Separate Chaining with linked lists' },
@@ -287,6 +336,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_dsa_004',
     examId: 'exam_cs_102',
+    subject: 'Computer Science',
+    topic: 'Algorithms',
+    subtopic: 'Dynamic Programming',
+    concept: 'Optimal Substructure & Overlapping Subproblems',
+    difficulty: 'Medium',
     questionText: 'In dynamic programming, what are the two fundamental properties a problem must possess to be solvable via DP?',
     options: [
       { id: 'A', text: 'Continuous differentiability and deterministic randomness' },
@@ -302,6 +356,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_dsa_005',
     examId: 'exam_cs_102',
+    subject: 'Computer Science',
+    topic: 'Algorithms',
+    subtopic: 'Sorting',
+    concept: 'Merge Sort Auxiliary Space',
+    difficulty: 'Easy',
     questionText: 'What is the space complexity of merge sort when sorting an array of N integers in standard implementation?',
     options: [
       { id: 'A', text: 'O(1) auxiliary space' },
@@ -319,6 +378,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_cloud_001',
     examId: 'exam_cs_103',
+    subject: 'Information Technology',
+    topic: 'Cloud & Infrastructure',
+    subtopic: 'Kubernetes Architecture',
+    concept: 'Pod Scheduling Mechanism',
+    difficulty: 'Medium',
     questionText: 'In Kubernetes architecture, which master component is responsible for distributing and assigning Pods to worker nodes based on resource availability?',
     options: [
       { id: 'A', text: 'kube-proxy' },
@@ -334,6 +398,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_cloud_002',
     examId: 'exam_cs_103',
+    subject: 'Information Technology',
+    topic: 'DevOps & CI/CD',
+    subtopic: 'Deployment Strategies',
+    concept: 'Traffic Splitting & Rollout Patterns',
+    difficulty: 'Medium',
     questionText: 'What is the primary distinction between Blue-Green Deployment and Canary Deployment?',
     options: [
       { id: 'A', text: 'Blue-Green deploys to mobile, while Canary deploys to web only.' },
@@ -349,6 +418,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_cloud_003',
     examId: 'exam_cs_103',
+    subject: 'Information Technology',
+    topic: 'Cloud & Infrastructure',
+    subtopic: 'Containerization',
+    concept: 'Control Groups Resource Metering',
+    difficulty: 'Hard',
     questionText: 'Which Linux kernel feature enables Docker to isolate resource consumption (CPU, memory, disk I/O) for individual containers?',
     options: [
       { id: 'A', text: 'Control Groups (cgroups)' },
@@ -364,14 +438,12 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_cloud_004',
     examId: 'exam_cs_103',
+    subject: 'Information Technology',
+    topic: 'DevOps & CI/CD',
+    subtopic: 'Cloud-Native Architecture',
+    concept: 'Environment Variable Configuration',
+    difficulty: 'Easy',
     questionText: 'According to the 12-Factor App methodology, how should application configuration (e.g. database credentials, API tokens) be stored?',
-    options: [
-      { id: 'A', text: 'Hardcoded in dedicated configuration constants in source control.' },
-      { id: 'B', text: 'Stored strictly in strict environment variables (env vars).' },
-      { id: 'C', text: 'Committed to XML files in the repository root directory.' },
-      { id: 'D', text: 'Embedded in compiled JavaScript bundles.' },
-    ],
-    correctAnswer: 'A', // Wait, let's fix this! 12-Factor app config must be in environment variables!
     options: [
       { id: 'A', text: 'Hardcoded in dedicated configuration constants in source control.' },
       { id: 'B', text: 'Stored strictly in environment variables (env vars) separated from code.' },
@@ -388,6 +460,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_ai_001',
     examId: 'exam_cs_104',
+    subject: 'Computer Science',
+    topic: 'Machine Learning',
+    subtopic: 'Transformer Architectures',
+    concept: 'Self-Attention Alignment',
+    difficulty: 'Hard',
     questionText: 'What is the attention mechanism primarily computing in transformer models?',
     options: [
       { id: 'A', text: 'Soft alignment weights between query and key vectors.' },
@@ -403,6 +480,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_ai_002',
     examId: 'exam_cs_104',
+    subject: 'Computer Science',
+    topic: 'Machine Learning',
+    subtopic: 'Deep Neural Networks',
+    concept: 'Vanishing Gradient Mitigation',
+    difficulty: 'Medium',
     questionText: 'What problem does residual (skip) connections solve in deep neural networks?',
     options: [
       { id: 'A', text: 'Vanishing and exploding gradients during backpropagation.' },
@@ -418,6 +500,11 @@ export const SEED_QUESTIONS = [
   {
     id: 'qst_ai_003',
     examId: 'exam_cs_104',
+    subject: 'Computer Science',
+    topic: 'Machine Learning',
+    subtopic: 'Generative Models',
+    concept: 'Entropy & Temperature Scaling',
+    difficulty: 'Easy',
     questionText: 'What is the purpose of temperature parameter in LLM text generation sampling?',
     options: [
       { id: 'A', text: 'Controls the randomness and entropy of token probability distributions.' },
@@ -430,6 +517,7 @@ export const SEED_QUESTIONS = [
     explanation: 'Lower temperature sharpens the probability distribution making output more deterministic; higher temperature flattens it for increased diversity.',
     createdAt: '2026-11-02T16:15:00.000Z',
   },
+  ...EXPANDED_QUESTIONS,
 ];
 
 // Sample Historical Results (with complete immutable snapshots)
@@ -546,6 +634,16 @@ export const SEED_RESULTS = [
         explanation: 'Correct! 429 stands for Too Many Requests.',
       },
     ],
+    examFairAudit: {
+      verifiedAt: '2026-11-02T14:55:00.000Z',
+      tabSwitches: 0,
+      copyPasteAttempts: 0,
+      rapidAnomalies: 0,
+      integrityScore: 100,
+      status: 'CLEAN_VERIFIED',
+      riskLevel: 'LOW',
+      summary: 'Assessment session fully verified with zero suspicious telemetry.',
+    },
   },
   {
     id: 'res_seed_002',
@@ -577,6 +675,22 @@ export const SEED_RESULTS = [
     submittedAt: '2026-11-03T15:40:00.000Z',
     durationTakenSeconds: 1100,
     submissionType: 'manual',
+    examFairAudit: {
+      verifiedAt: '2026-11-03T15:40:00.000Z',
+      tabSwitches: 1,
+      copyPasteAttempts: 0,
+      rapidAnomalies: 0,
+      integrityScore: 90,
+      status: 'CLEAN_VERIFIED',
+      riskLevel: 'LOW',
+      summary: 'Assessment session verified with minor window unfocus logged.',
+    },
+    adaptiveReport: {
+      theta: 1.85,
+      scaledScore: 88,
+      proficiencyTier: 'Advanced / Mastery',
+      trajectory: ['Medium (Correct)', 'Hard (Correct)', 'Hard (Correct)', 'Hard (Correct)', 'Hard (Correct)'],
+    },
     answersBreakdown: [],
   },
   {
@@ -611,10 +725,11 @@ export const SEED_RESULTS = [
     submissionType: 'auto-timer',
     answersBreakdown: [],
   },
+  ...EXPANDED_RESULTS,
 ];
 
 /**
- * Initializes default demo data if missing.
+ * Initializes default demo data if missing or merges missing seed entities idempotently.
  * Will NOT overwrite existing records if they have already been seeded or modified.
  *
  * @returns {{ initialized: boolean, usersCount: number, examsCount: number, questionsCount: number, resultsCount: number }}
@@ -622,37 +737,69 @@ export const SEED_RESULTS = [
 export const initializeSeedData = () => {
   let initialized = false;
 
-  // 1. Initialize Users (Admin + Seed Students)
+  // 1. Initialize / Merge Users (Admin + Seed Students)
   const existingUsers = getItem('users', null);
+  const initialUsers = [PREDEFINED_ADMIN, ...SEED_STUDENTS];
   if (!existingUsers || !Array.isArray(existingUsers) || existingUsers.length === 0) {
-    const initialUsers = [PREDEFINED_ADMIN, ...SEED_STUDENTS];
     setItem('users', initialUsers);
     initialized = true;
     console.info(`[seedData] Initialized ${initialUsers.length} seed users.`);
+  } else {
+    const existingIds = new Set(existingUsers.map((u) => u.id));
+    const missingUsers = initialUsers.filter((u) => !existingIds.has(u.id));
+    if (missingUsers.length > 0) {
+      setItem('users', [...existingUsers, ...missingUsers]);
+      initialized = true;
+      console.info(`[seedData] Merged ${missingUsers.length} missing seed users.`);
+    }
   }
 
-  // 2. Initialize Examinations
+  // 2. Initialize / Merge Examinations
   const existingExams = getItem('examinations', null);
   if (!existingExams || !Array.isArray(existingExams) || existingExams.length === 0) {
     setItem('examinations', SEED_EXAMINATIONS);
     initialized = true;
     console.info(`[seedData] Initialized ${SEED_EXAMINATIONS.length} seed examinations.`);
+  } else {
+    const existingIds = new Set(existingExams.map((e) => e.id));
+    const missingExams = SEED_EXAMINATIONS.filter((e) => !existingIds.has(e.id));
+    if (missingExams.length > 0) {
+      setItem('examinations', [...existingExams, ...missingExams]);
+      initialized = true;
+      console.info(`[seedData] Merged ${missingExams.length} missing seed examinations.`);
+    }
   }
 
-  // 3. Initialize Questions
+  // 3. Initialize / Merge Questions
   const existingQuestions = getItem('questions', null);
   if (!existingQuestions || !Array.isArray(existingQuestions) || existingQuestions.length === 0) {
     setItem('questions', SEED_QUESTIONS);
     initialized = true;
     console.info(`[seedData] Initialized ${SEED_QUESTIONS.length} seed questions.`);
+  } else {
+    const existingIds = new Set(existingQuestions.map((q) => q.id));
+    const missingQuestions = SEED_QUESTIONS.filter((q) => !existingIds.has(q.id));
+    if (missingQuestions.length > 0) {
+      setItem('questions', [...existingQuestions, ...missingQuestions]);
+      initialized = true;
+      console.info(`[seedData] Merged ${missingQuestions.length} missing seed questions.`);
+    }
   }
 
-  // 4. Initialize Historical Results
+  // 4. Initialize / Merge Historical Results
   const existingResults = getItem('results', null);
   if (!existingResults || !Array.isArray(existingResults) || existingResults.length === 0) {
     setItem('results', SEED_RESULTS);
     initialized = true;
     console.info(`[seedData] Initialized ${SEED_RESULTS.length} seed results.`);
+  } else {
+    const existingIds = new Set(existingResults.map((r) => r.id));
+    const missingResults = SEED_RESULTS.filter((r) => !existingIds.has(r.id));
+    if (missingResults.length > 0) {
+      setItem('results', [...existingResults, ...missingResults]);
+      initialized = true;
+      console.info(`[seedData] Merged ${missingResults.length} missing seed results.`);
+    }
   }
 
   const currentUsers = getItem('users', []);

@@ -27,3 +27,5 @@ dist-ssr
 .chrome-temp*
 test-results/
 .system_generated/
+capture_*.js
+test_server_probe.js

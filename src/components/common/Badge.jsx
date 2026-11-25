@@ -1,14 +1,7 @@
 import React from 'react';
 
 /**
- * Reusable Badge Component
- *
- * @param {Object} props
- * @param {'neutral'|'primary'|'success'|'warning'|'danger'} [props.variant='neutral']
- * @param {'sm'|'md'} [props.size='md']
- * @param {boolean} [props.dot=false]
- * @param {string} [props.className='']
- * @param {React.ReactNode} props.children
+ * Reusable Badge Component (supports semantic variants: easy, medium, hard, primary, success, warning, danger, neutral)
  */
 export function Badge({
   variant = 'neutral',
@@ -36,4 +29,3 @@ export function Badge({
 }
 
 export default Badge;
-

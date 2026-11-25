@@ -1,7 +1,8 @@
 import React from 'react';
+import { AnimatedCounter } from './Motion';
 
 /**
- * Reusable Minimal Metric StatCard
+ * Reusable Minimal Metric StatCard with prominent LeetCode/Linear hierarchy
  *
  * @param {Object} props
  * @param {string} props.title
@@ -10,6 +11,7 @@ import React from 'react';
  * @param {React.ReactNode} [props.icon]
  * @param {React.ReactNode} [props.badge]
  * @param {string} [props.className='']
+ * @param {boolean} [props.featured=false]
  */
 export function StatCard({
   title,
@@ -18,20 +20,23 @@ export function StatCard({
   icon,
   badge,
   className = '',
+  featured = false,
 }) {
   return (
-    <div className={`stat-card ${className}`}>
-      <div className="stat-header">
-        <span className="stat-title">{title}</span>
-        {icon && <div className="stat-icon">{icon}</div>}
+    <div className={`stat-card ${featured ? 'stat-card-featured' : ''} ${className}`}>
+      <div className="stat-card-header">
+        <span className="stat-card-title">{title}</span>
+        {icon && <div className="stat-card-icon">{icon}</div>}
       </div>
 
-      <div className="stat-value">{value}</div>
+      <div className="stat-card-value">
+        <AnimatedCounter value={value} />
+      </div>
 
       {(subtitle || badge) && (
-        <div className="stat-meta">
+        <div className="stat-card-footer">
           {badge}
-          {subtitle && <span>{subtitle}</span>}
+          {subtitle && <span className="stat-card-subtitle">{subtitle}</span>}
         </div>
       )}
     </div>
@@ -39,4 +44,3 @@ export function StatCard({
 }
 
 export default StatCard;
-

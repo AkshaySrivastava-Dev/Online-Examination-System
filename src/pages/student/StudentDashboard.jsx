@@ -14,6 +14,8 @@ import {
   Badge,
   Button,
   EmptyState,
+  PageTransition,
+  FloatingBackgroundElements,
 } from '../../components/common';
 import {
   BookOpen,
@@ -25,6 +27,7 @@ import {
   ArrowRight,
   GraduationCap,
   Play,
+  Brain,
 } from 'lucide-react';
 import { formatDate, formatDateTime, formatDuration } from '../../utils/formatters.js';
 
@@ -85,10 +88,12 @@ export function StudentDashboard() {
   });
 
   return (
-    <div>
+    <PageTransition>
       {/* Welcome Section */}
       <div
         style={{
+          position: 'relative',
+          overflow: 'hidden',
           padding: '2rem var(--space-8)',
           backgroundColor: 'var(--color-surface)',
           border: '1px solid var(--color-border)',
@@ -102,7 +107,8 @@ export function StudentDashboard() {
           gap: '1.5rem',
         }}
       >
-        <div>
+        <FloatingBackgroundElements count={3} opacity={0.35} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
             <div className="eyebrow">CANDIDATE PORTAL</div>
             <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>{todayFormatted}</span>
@@ -124,6 +130,11 @@ export function StudentDashboard() {
           <Link to="/student/results" style={{ textDecoration: 'none' }}>
             <Button variant="secondary" size="md" iconLeft={<Award size={16} />}>
               My Results
+            </Button>
+          </Link>
+          <Link to="/student/exam-dna" style={{ textDecoration: 'none' }}>
+            <Button variant="secondary" size="md" iconLeft={<Brain size={16} />}>
+              ExamDNA™
             </Button>
           </Link>
         </div>
@@ -315,7 +326,7 @@ export function StudentDashboard() {
           </div>
         )}
       </section>
-    </div>
+    </PageTransition>
   );
 }
 

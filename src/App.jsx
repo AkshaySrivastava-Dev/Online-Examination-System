@@ -1,5 +1,6 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
 import { initializeSeedData } from './services/seedData.js';
@@ -29,6 +30,7 @@ const ExamInstructions = lazy(() => import('./pages/student/ExamInstructions.jsx
 const StudentResults = lazy(() => import('./pages/student/StudentResults.jsx').then(m => ({ default: m.StudentResults })));
 const StudentResultDetail = lazy(() => import('./pages/student/StudentResultDetail.jsx').then(m => ({ default: m.StudentResultDetail })));
 const StudentProfile = lazy(() => import('./pages/student/StudentProfile.jsx').then(m => ({ default: m.StudentProfile })));
+const StudentExamDna = lazy(() => import('./pages/student/StudentExamDna.jsx').then(m => ({ default: m.StudentExamDna })));
 const ExamInterface = lazy(() => import('./pages/student/ExamInterface.jsx').then(m => ({ default: m.ExamInterface })));
 
 /**
@@ -69,11 +71,12 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <ToastProvider>
-        <AuthProvider>
-          <Suspense fallback={<ViewFallback />}>
-            <Routes>
+    <ThemeProvider>
+      <BrowserRouter>
+        <ToastProvider>
+          <AuthProvider>
+            <Suspense fallback={<ViewFallback />}>
+              <Routes>
               {/* Root index route */}
               <Route path="/" element={<RootIndexRedirect />} />
 
@@ -117,6 +120,7 @@ export default function App() {
                 <Route path="exam/:examId/instructions" element={<ExamInstructions />} />
                 <Route path="results" element={<StudentResults />} />
                 <Route path="results/:resultId" element={<StudentResultDetail />} />
+                <Route path="exam-dna" element={<StudentExamDna />} />
                 <Route path="profile" element={<StudentProfile />} />
               </Route>
 
@@ -137,5 +141,6 @@ export default function App() {
         </AuthProvider>
       </ToastProvider>
     </BrowserRouter>
-  );
+  </ThemeProvider>
+);
 }
